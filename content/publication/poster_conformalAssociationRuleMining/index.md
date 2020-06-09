@@ -22,27 +22,36 @@ image:
 # links:
 # - name: Custom Link
 #   url: http://example.org
-projects:
-- internal-project
-publication: "*Proceedings of Machine Learning Reserach 105:1-2, 2019*"
+#projects: []
+#- internal-project
+publication: "*Proceedings of Machine Learning Research 105:1-2, 2019*"
 publication_short: "PMLR"
-publication_types: 
+publication_types:
 - "1"
+
+# 0 = Uncategorized
+# 1 = Conference paper
+# 2 = Journal article
+# 3 = Preprint / Working Paper
+# 4 = Report
+# 5 = Book
+# 6 = Book section
+# 7 = Thesis (v4.2+ required)
+# 8 = Patent (v4.2+ required)
+
 publishDate: "2019-09-11T00:00:00Z"
 # slides: example
 summary: "We propose a novel technique based on a combination of association rule learning and conformal prediction in its label-dependent form. The non-conformity score is not based directly on a classification algorithm, but aggregates information of many association rules that can be extracted from the data, and
 exceptions from them."
 tags:
-- Source Themes
+#- Source Themes
 title: Conformal Anomaly Detection based on Association Rules
 url_code: ''
 url_dataset: ''
 url_pdf: http://proceedings.mlr.press/v105/balinsky19a/balinsky19a.pdf
-url_poster: ''
+url_poster: 'files/conformalARM_poster_v2.pdf'
 url_project: ""
 url_slides: ""
 url_source: ''
 url_video: ''
 ---
-
-

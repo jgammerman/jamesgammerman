@@ -14,13 +14,11 @@ education:
 email: "jgammerman@gmail.com"
 interests:
 - Classical Machine Learning
-- Deep Learning - particularly as applied to sequence data (RNNs/LSTMs)
+- Deep Learning
 - Conformal Prediction
 - Natural Language Processing / Text Mining
-- Clustering
-- Anomaly Detection
 - Visualisation
-- Statistics
+- Data Analysis
 
 organizations:
 - name: Centrica
@@ -29,7 +27,7 @@ role: Data Scientist
 social:
 - icon: envelope
   icon_pack: fas
-  link: "jgammerman@gmail.com"
+  link: "mailto:jgammerman@gmail.com"
 - icon: twitter
   icon_pack: fab
   link: https://twitter.com/jamesgammerman
@@ -39,7 +37,7 @@ social:
 - icon: github
   icon_pack: fab
   link: https://github.com/jgammerman
-superuser: false
+superuser: true
 title: James Gammerman
 # user_groups:
 # - Researchers
@@ -48,6 +46,6 @@ title: James Gammerman
 
 I am a data scientist at the British energy company [Centrica](https://www.centrica.com/). I have three years of professional experience in data science, and seven years in data analysis more generally.
 
-My main area of interest is machine learning, in which I have a Masters degree from Royal Holloway University of London (2018). I have also recently started publishing research in academic journals.
+My main area of interest is machine learning, in which I have a Masters degree from Royal Holloway University of London (2018). I enjoy applying ML techniques to business data. I have also recently started publishing research in academic journals.
 
-Outside of my career my main interests are socialising, sports, music and learning (natural!) languages.
+Outside of my career my main hobbies are socialising, sports, music and learning (natural!) languages.

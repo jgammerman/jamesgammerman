@@ -1,0 +1,36 @@
+---
+title: 'Cocktail recipes analysis for #TidyTuesday'
+author: James Gammerman
+date: '2020-06-09'
+slug: cocktail-recipes-analysis-tidytuesday
+categories:
+  - R
+tags:
+  - rstats
+  - unsupervised learning
+  - tidytuesday
+subtitle: ''
+summary: ''
+authors: []
+lastmod: '2020-06-09T23:45:28+01:00'
+featured: no
+image: 
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+draft: false
+header:
+  image: "blog/cocktails.jpg"
+  caption: "Image credit: [**Youtube**](https://www.youtube.com/watch?v=c6GV_vRlIIA)"
+---
+
+## Blah blah blah!
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```

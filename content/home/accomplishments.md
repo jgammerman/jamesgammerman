@@ -6,7 +6,7 @@ active = true  # Activate this widget? true/false
 weight = 50  # Order that this section will appear.
 
 title = "Recent Accomplish&shy;ments"
-subtitle = ""
+subtitle = "Online learning"
 
 # Date format
 #   Refer to https://sourcethemes.com/academic/docs/customization/#date-format
@@ -18,17 +18,17 @@ date_format = "Jan 2006"
 #   Leave other parameters empty if not required.
 #   Begin/end multi-line descriptions with 3 quotes `"""`.
 
-  
+
 [[item]]
-  organization = "DataCamp"
-  organization_url = "https://www.datacamp.com"
-  title = "Building Dashboard with flexdashboards"
-  url = "https://learn.datacamp.com/courses/building-dashboards-with-flexdashboard"
-  certificate_url = "https://www.datacamp.com/statement-of-accomplishment/course/a955b60ec2d95e6e592e1a063f44eaed58c52dc5?share=true"
-  date_start = "2020-05-18"
+organization = "DataCamp"
+organization_url = "https://www.datacamp.com"
+title = "Feature Engineering for NLP in Python"
+url = "https://learn.datacamp.com/courses/feature-engineering-for-nlp-in-python"
+certificate_url = "https://www.datacamp.com/statement-of-accomplishment/course/f3d85749b0747ae7809e71d50c91e036d5d39673?share=true"
+date_start = "2020-06-02"
 #  date_end = "2017-12-21"
-  description = ""
-  
+description = ""
+
   [[item]]
   organization = "DataCamp"
   organization_url = "https://www.datacamp.com"
@@ -38,16 +38,17 @@ date_format = "Jan 2006"
   date_start = "2020-05-14"
 #  date_end = "2017-12-21"
   description = ""
-  
+
   [[item]]
-  organization = "DataCamp"
-  organization_url = "https://www.datacamp.com"
-  title = "Building and Distributiong Packages with Conda"
-  url = "https://learn.datacamp.com/courses/building-and-distributing-packages-with-conda"
-  certificate_url = "https://www.datacamp.com/statement-of-accomplishment/course/c91201dace0b3a1184570c092dcf30dd607d73db?share=true"
-  date_start = "2020-05-07"
-#  date_end = "2017-12-21"
-  description = ""
+    organization = "DataCamp"
+    organization_url = "https://www.datacamp.com"
+    title = "Building Dashboards with flexdashboard"
+    url = "https://learn.datacamp.com/courses/building-dashboards-with-flexdashboard"
+    certificate_url = "https://www.datacamp.com/statement-of-accomplishment/course/a955b60ec2d95e6e592e1a063f44eaed58c52dc5?share=true"
+    date_start = "2020-05-18"
+  #  date_end = "2017-12-21"
+    description = ""
+
 
 
 
