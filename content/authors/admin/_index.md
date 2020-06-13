@@ -44,8 +44,8 @@ title: James Gammerman
 # - Visitors
 ---
 
-I am a data scientist at the British energy company [Centrica](https://www.centrica.com/). I have three years of professional experience in data science, and seven years in data analysis more generally.
+I am a  data scientist working at the British energy company [Centrica](https://www.centrica.com/). I have three years of professional experience in data science, and seven years in data analysis more generally.
 
-My main area of interest is machine learning, in which I have a Masters degree from Royal Holloway University of London (2018). I enjoy applying ML techniques to business data. I have also recently started publishing research in academic journals.
+My main area of interest is machine learning, in which I have a Masters degree from Royal Holloway University of London (2018). I enjoy applying machine learning and statistical techniques to business data. I have also recently started publishing research in academic journals.
 
 Outside of my career my main hobbies are socialising, sports, music and learning (natural!) languages.

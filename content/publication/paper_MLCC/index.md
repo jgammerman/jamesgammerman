@@ -2,7 +2,7 @@
 title: "Multi-level conformal clustering: A distribution-free technique for clustering and anomaly detection"
 abstract: "In this work we present a clustering technique called multi-level conformal clustering (MLCC). The technique is hierarchical in nature because it can be performed at multiple significance levels which yields greater insight into the data than...
 
-[More](https://www.sciencedirect.com/science/article/abs/pii/S0925231219316169)  \n
+[(Link to article)](https://www.sciencedirect.com/science/article/abs/pii/S0925231219316169)  \n
 "
 
 #[PDF](https://arxiv.org/pdf/1910.08105.pdf)
@@ -26,7 +26,7 @@ publication_types:
 - "2"
 publishDate: "2020-07-15T00:00:00Z"
 #slides: example
-summary: This paper presents a novel clustering technique called multi-level conformal clustering (MLCC). The technique is hierarchical in nature because it can be performed at multiple significance levels which yields greater insight into the data than performing it at just one level. We describe the theoretical underpinnings of MLCC, compare and contrast it with the hierarchical clustering algorithm, and then apply it to real world datasets to assess its performance.
+summary: This paper was developed from my MSc thesis and published in Neurocomputing (volume 397). It introduces a novel clustering technique which also incorporates anomaly detection.
 
 tags:
 #- Source Themes

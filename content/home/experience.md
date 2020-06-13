@@ -25,24 +25,22 @@ date_format = "Jan 2006"
   date_start = "2017-04-01"
   date_end = ""
   description = """
-  
-  Responsibilities include:
-  
-  * Data science activities:  
-  
-      + Collection/extraction
-      + Wrangling/cleaning
-      + Exploration
+
+  * Key activities:  
+
+      + Data Cleaning
+      + Data Exploration
       + Visualistion
+      + Feature Engineering
+      + Modelling / Analysis
       + Deployment
 
   * Training colleagues in R language & statistical programming
-  
-      + Instructor for five 3-day workshops across the UK
-    
-  * Managing knowledge-transfer collaboration between Centrica and Royal Holloway university 
-  
-  * Aided building and deployment of large-scale analytics server across the company
+
+      + Instructor for several 3-day workshops across the UK
+
+  * Managing knowledge-transfer collaboration between Centrica and Royal Holloway university
+
   """
 
 [[experience]]
@@ -53,6 +51,6 @@ date_format = "Jan 2006"
   date_start = "2013-08-01"
   date_end = "2017-04-01"
   description = """
-  
+
   Gas & Power Marketing and Trading: Wide range of data analytics tasks/projects"""
 +++

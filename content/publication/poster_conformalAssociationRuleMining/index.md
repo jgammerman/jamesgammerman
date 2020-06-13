@@ -41,8 +41,7 @@ publication_types:
 
 publishDate: "2019-09-11T00:00:00Z"
 # slides: example
-summary: "We propose a novel technique based on a combination of association rule learning and conformal prediction in its label-dependent form. The non-conformity score is not based directly on a classification algorithm, but aggregates information of many association rules that can be extracted from the data, and
-exceptions from them."
+summary: This poster abstract was published in the Proceedings of Machine Learning Research (volume 105), and introduces a novel machine learning technique for database cleaning.
 tags:
 #- Source Themes
 title: Conformal Anomaly Detection based on Association Rules
