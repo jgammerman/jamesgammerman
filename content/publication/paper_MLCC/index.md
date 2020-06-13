@@ -1,5 +1,5 @@
 ---
-title: "Multi-level conformal clustering: A distribution-free technique for clustering and anomaly detection"
+title: "Multi-Level Conformal Clustering: A Distribution-free Technique for Clustering and Anomaly Detection"
 abstract: "In this work we present a clustering technique called multi-level conformal clustering (MLCC). The technique is hierarchical in nature because it can be performed at multiple significance levels which yields greater insight into the data than...
 
 [(Link to article)](https://www.sciencedirect.com/science/article/abs/pii/S0925231219316169)  \n

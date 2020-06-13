@@ -26,7 +26,7 @@ date_format = "Jan 2006"
   date_end = ""
   description = """
 
-  * Key activities:  
+  * Key responsibilities:  
 
       + Data Cleaning
       + Data Exploration
@@ -35,11 +35,13 @@ date_format = "Jan 2006"
       + Modelling / Analysis
       + Deployment
 
+  * Participated in several value-adding projects.
+
   * Training colleagues in R language & statistical programming
 
       + Instructor for several 3-day workshops across the UK
 
-  * Managing knowledge-transfer collaboration between Centrica and Royal Holloway university
+  * Managing collaboration between Centrica and Royal Holloway university, which has led to publication of research
 
   """
 
@@ -52,5 +54,5 @@ date_format = "Jan 2006"
   date_end = "2017-04-01"
   description = """
 
-  Gas & Power Marketing and Trading: Wide range of data analytics tasks/projects"""
+  Gas & Power Marketing and Trading: Wide range of data analytics tasks/projects relating to European markets"""
 +++

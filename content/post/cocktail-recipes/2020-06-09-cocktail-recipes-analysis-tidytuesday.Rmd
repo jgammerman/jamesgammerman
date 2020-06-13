@@ -25,12 +25,86 @@ header:
   caption: "Image credit: [**Youtube**](https://www.youtube.com/watch?v=c6GV_vRlIIA)"
 ---
 
-## Blah blah blah!
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message= FALSE, cache = TRUE, dpi = 180)
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+library(tidyverse)
+library(scales)
+theme_set(theme_minimal())
 ```
+
+For this first blog post I thought I'd take a recent #TidyTuesday dataset and do some analysis of it. Where better to start than one of my favourite things? Cocktails!
+
+I will apply the unsupervised learning technique principal component analysis (PCA) to look for patterns in this data.
+
+Let's load the cocktails receipes dataset and take a quick look at it: 
+
+```{r}
+boston_cocktails <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-05-26/boston_cocktails.csv")
+
+boston_cocktails %>% head()
+```
+
+So basically on each line we have the name of the cocktail, its category, then each ingredient in it and the amount of it required. Let's see what the top ingredients are:
+
+```{r}
+boston_cocktails %>%
+  count(ingredient, sort = TRUE) %>% 
+  slice(1:20)
+```
+
+Look at entries 2, 13 and 17. It's all lemon juice! We need to do some cleaning...
+
+```{r}
+cocktails_parsed <- boston_cocktails %>%
+  mutate(
+    ingredient = str_to_lower(ingredient),
+    ingredient = str_replace_all(ingredient, "-", " "),
+    ingredient = str_remove(ingredient, " liqueur$"),
+    ingredient = str_remove(ingredient, " (if desired)$"),
+    ingredient = case_when(
+      str_detect(ingredient, "bitters") ~ "bitters",
+      str_detect(ingredient, "lemon") ~ "lemon juice",
+      str_detect(ingredient, "lime") ~ "lime juice",
+      str_detect(ingredient, "grapefruit") ~ "grapefruit juice",
+      str_detect(ingredient, "orange") ~ "orange juice",
+      TRUE ~ ingredient
+    ),
+    measure = case_when(
+      str_detect(ingredient, "bitters") ~ str_replace(measure, "oz$", "dash"),
+      TRUE ~ measure
+    ),
+    measure = str_replace(measure, " ?1/2", ".5"),
+    measure = str_replace(measure, " ?3/4", ".75"),
+    measure = str_replace(measure, " ?1/4", ".25"),
+    measure_number = parse_number(measure),
+    measure_number = if_else(str_detect(measure, "dash$"),
+      measure_number / 50,
+      measure_number
+    )
+  ) %>%
+  add_count(ingredient) %>%
+  filter(n > 15) %>%
+  select(-n) %>%
+  distinct(row_id, ingredient, .keep_all = TRUE) %>%    # to stop repetitions e.g. if we had lemon slice and lemon juice in a recipe then we will end up with 2 'lemon's as per our mutate() calls earlier
+  na.omit()
+
+cocktails_parsed
+```
+
+Ok now let's take another look at the top ingredients:
+
+```{r}
+cocktails_parsed %>% 
+        count(ingredient, sort = TRUE) %>% 
+        head(20) %>% 
+        mutate(ingredient = fct_reorder(ingredient, n)) %>% 
+        ggplot(aes(n, ingredient)) + 
+        geom_col() +
+        labs(title = "Most common ingredients in Mr Boston recipes")
+```
+
+This looks much better. Unsurprisingly lemon juice is at the top, while the top alcoholic ingredient is gin. I almost want a G&T already...
+
+
+

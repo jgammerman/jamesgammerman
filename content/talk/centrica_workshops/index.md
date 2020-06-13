@@ -1,20 +1,20 @@
 ---
-title: "Machine Learning: Progress & Prospects"
-event: Invited Talk
+title: "Training Course: Business Analytics in R - An Introduction to Statistical Programming"
+event: Training Course
 #event_url: https://example.org
 
-location: University of Odessa (Mechnikov)
+location: United Kingdom (various locations)
 address:
 #  city: Odessa
   country: Ukraine
 
-summary: A talk I gave on machine learning in Ukraine in 2018.
+summary: Booklet for a training course I co-authored and have presented several times to company employees across the UK.
 
-Abstract: "This is a [recording](https://www.youtube.com/watch?v=n5iz5GPdO5Y) of a talk I gave at the University of Odessa in Ukraine in Odessa. In it I gave an outline of machine learning fundamentals and then touched on more recent developments and future prospects."
+Abstract: Booklet for a training course I co-authored with my colleague Timothy Wong, and have presented several times to company employees across the UK.
 
 # Talk start and end times.
 #   End time can optionally be hidden by prefixing the line with `#`.
-date: "2018-05-31T13:00:00Z"
+date: "2019-05-10T13:00:00Z"
 #date_end: "2030-06-01T15:00:00Z"
 all_day: true
 
@@ -37,9 +37,9 @@ links:
 #  name: Follow
 #  url: https://twitter.com/georgecushen
 #url_code: ""
-#url_pdf: ""
+url_pdf: "files/Business-Analytics-in-R.pdf"
 #url_slides: ""
-url_video: "https://www.youtube.com/watch?v=n5iz5GPdO5Y"
+url_video: ""
 
 # Markdown Slides (optional).
 #   Associate this talk with Markdown slides.
@@ -60,10 +60,12 @@ url_video: "https://www.youtube.com/watch?v=n5iz5GPdO5Y"
 math: false
 ---
 
+I enjoy teaching and have given several training courses to colleagues across the country. This training course introduces statistical and machine learning techniques and applies them in business contexts using the R programming language.
 
-<!--
-- **Create** slides using Academic's [*Slides*](https://sourcethemes.com/academic/docs/managing-content/#create-slides) feature and link using `slides` parameter in the front matter of the talk file
-- **Upload** an existing slide deck to `static/` and link using `url_slides` parameter in the front matter of the talk file
-- **Embed** your slides (e.g. Google Slides) or presentation video on this page using [shortcodes](https://sourcethemes.com/academic/docs/writing-markdown-latex/).
+You can find more photographs from these workshops below.
 
-Further talk details can easily be added to this page using *Markdown* and $\rm \LaTeX$ math code. -->
+![Me teaching in Edinburgh 1](/img/PhotosOfMeForBlog/me_workshop2.jpg)
+
+![Me teaching in Staines](/img/PhotosOfMeForBlog/me_workshop3.jpg)
+
+![Me teaching in Edinburgh 2](/img/PhotosOfMeForBlog/me_workshop4.jpg)

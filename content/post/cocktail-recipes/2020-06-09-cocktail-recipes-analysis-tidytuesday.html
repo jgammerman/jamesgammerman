@@ -27,16 +27,104 @@ header:
 
 
 
-<div id="blah-blah-blah" class="section level2">
-<h2>Blah blah blah!</h2>
-<p>This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <a href="http://rmarkdown.rstudio.com" class="uri">http://rmarkdown.rstudio.com</a>.</p>
-<p>When you click the <strong>Knit</strong> button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:</p>
-<pre class="r"><code>summary(cars)</code></pre>
-<pre><code>##      speed           dist       
-##  Min.   : 4.0   Min.   :  2.00  
-##  1st Qu.:12.0   1st Qu.: 26.00  
-##  Median :15.0   Median : 36.00  
-##  Mean   :15.4   Mean   : 42.98  
-##  3rd Qu.:19.0   3rd Qu.: 56.00  
-##  Max.   :25.0   Max.   :120.00</code></pre>
-</div>
+<p>For this first blog post I thought I’d take a recent #TidyTuesday dataset and do some analysis of it. Where better to start than one of my favourite things? Cocktails!</p>
+<p>I will apply the unsupervised learning technique principal component analysis (PCA) to look for patterns in this data.</p>
+<p>Let’s load the cocktails receipes dataset and take a quick look at it:</p>
+<pre class="r"><code>boston_cocktails &lt;- readr::read_csv(&quot;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-05-26/boston_cocktails.csv&quot;)
+
+boston_cocktails %&gt;% head()</code></pre>
+<pre><code>## # A tibble: 6 x 6
+##   name         category        row_id ingredient_number ingredient       measure
+##   &lt;chr&gt;        &lt;chr&gt;            &lt;dbl&gt;             &lt;dbl&gt; &lt;chr&gt;            &lt;chr&gt;  
+## 1 Gauguin      Cocktail Class…      1                 1 Light Rum        2 oz   
+## 2 Gauguin      Cocktail Class…      1                 2 Passion Fruit S… 1 oz   
+## 3 Gauguin      Cocktail Class…      1                 3 Lemon Juice      1 oz   
+## 4 Gauguin      Cocktail Class…      1                 4 Lime Juice       1 oz   
+## 5 Fort Lauder… Cocktail Class…      2                 1 Light Rum        1 1/2 …
+## 6 Fort Lauder… Cocktail Class…      2                 2 Sweet Vermouth   1/2 oz</code></pre>
+<p>So basically on each line we have the name of the cocktail, its category, then each ingredient in it and the amount of it required. Let’s see what the top ingredients are:</p>
+<pre class="r"><code>boston_cocktails %&gt;%
+  count(ingredient, sort = TRUE) %&gt;% 
+  slice(1:20)</code></pre>
+<pre><code>## # A tibble: 20 x 2
+##    ingredient            n
+##    &lt;chr&gt;             &lt;int&gt;
+##  1 Gin                 176
+##  2 Fresh lemon juice   138
+##  3 Simple Syrup        115
+##  4 Vodka               114
+##  5 Light Rum           113
+##  6 Dry Vermouth        107
+##  7 Fresh Lime Juice    107
+##  8 Triple Sec          107
+##  9 Powdered Sugar       90
+## 10 Grenadine            85
+## 11 Sweet Vermouth       83
+## 12 Brandy               80
+## 13 Lemon Juice          70
+## 14 Blanco tequila       69
+## 15 Egg White            67
+## 16 Angostura Bitters    63
+## 17 Juice of a Lemon     60
+## 18 Pineapple Juice      47
+## 19 Bourbon whiskey      38
+## 20 Orange Bitters       38</code></pre>
+<p>Look at entries 2, 13 and 17. It’s all lemon juice! We need to do some cleaning…</p>
+<pre class="r"><code>cocktails_parsed &lt;- boston_cocktails %&gt;%
+  mutate(
+    ingredient = str_to_lower(ingredient),
+    ingredient = str_replace_all(ingredient, &quot;-&quot;, &quot; &quot;),
+    ingredient = str_remove(ingredient, &quot; liqueur$&quot;),
+    ingredient = str_remove(ingredient, &quot; (if desired)$&quot;),
+    ingredient = case_when(
+      str_detect(ingredient, &quot;bitters&quot;) ~ &quot;bitters&quot;,
+      str_detect(ingredient, &quot;lemon&quot;) ~ &quot;lemon juice&quot;,
+      str_detect(ingredient, &quot;lime&quot;) ~ &quot;lime juice&quot;,
+      str_detect(ingredient, &quot;grapefruit&quot;) ~ &quot;grapefruit juice&quot;,
+      str_detect(ingredient, &quot;orange&quot;) ~ &quot;orange juice&quot;,
+      TRUE ~ ingredient
+    ),
+    measure = case_when(
+      str_detect(ingredient, &quot;bitters&quot;) ~ str_replace(measure, &quot;oz$&quot;, &quot;dash&quot;),
+      TRUE ~ measure
+    ),
+    measure = str_replace(measure, &quot; ?1/2&quot;, &quot;.5&quot;),
+    measure = str_replace(measure, &quot; ?3/4&quot;, &quot;.75&quot;),
+    measure = str_replace(measure, &quot; ?1/4&quot;, &quot;.25&quot;),
+    measure_number = parse_number(measure),
+    measure_number = if_else(str_detect(measure, &quot;dash$&quot;),
+      measure_number / 50,
+      measure_number
+    )
+  ) %&gt;%
+  add_count(ingredient) %&gt;%
+  filter(n &gt; 15) %&gt;%
+  select(-n) %&gt;%
+  distinct(row_id, ingredient, .keep_all = TRUE) %&gt;%    # to stop repetitions e.g. if we had lemon slice and lemon juice in a recipe then we will end up with 2 &#39;lemon&#39;s as per our mutate() calls earlier
+  na.omit()
+
+cocktails_parsed</code></pre>
+<pre><code>## # A tibble: 2,542 x 7
+##    name     category   row_id ingredient_numb… ingredient measure measure_number
+##    &lt;chr&gt;    &lt;chr&gt;       &lt;dbl&gt;            &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;            &lt;dbl&gt;
+##  1 Gauguin  Cocktail …      1                1 light rum  2 oz              2   
+##  2 Gauguin  Cocktail …      1                3 lemon jui… 1 oz              1   
+##  3 Gauguin  Cocktail …      1                4 lime juice 1 oz              1   
+##  4 Fort La… Cocktail …      2                1 light rum  1.5 oz            1.5 
+##  5 Fort La… Cocktail …      2                2 sweet ver… .5 oz             0.5 
+##  6 Fort La… Cocktail …      2                3 orange ju… .25 oz            0.25
+##  7 Fort La… Cocktail …      2                4 lime juice .25 oz            0.25
+##  8 Cuban C… Cocktail …      4                1 lime juice .5 oz             0.5 
+##  9 Cuban C… Cocktail …      4                2 powdered … .5 oz             0.5 
+## 10 Cuban C… Cocktail …      4                3 light rum  2 oz              2   
+## # … with 2,532 more rows</code></pre>
+<p>Ok now let’s take another look at the top ingredients:</p>
+<pre class="r"><code>cocktails_parsed %&gt;% 
+        count(ingredient, sort = TRUE) %&gt;% 
+        head(20) %&gt;% 
+        mutate(ingredient = fct_reorder(ingredient, n)) %&gt;% 
+        ggplot(aes(n, ingredient)) + 
+        geom_col() +
+        labs(title = &quot;Most common ingredients in Mr Boston recipes&quot;)</code></pre>
+<p><img src="/www.jamesgammerman.com/post/cocktail-recipes/2020-06-09-cocktail-recipes-analysis-tidytuesday_files/figure-html/unnamed-chunk-4-1.png" width="1260" /></p>
+<p>This looks much better. Unsurprisingly lemon juice is at the top, while the top alcoholic ingredient is gin. I almost want a G&amp;T already…</p>
