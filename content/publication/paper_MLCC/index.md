@@ -30,10 +30,10 @@ tags:
 #- Source Themes
 url_code: ""
 url_dataset: ""
-url_pdf: https://arxiv.org/pdf/1910.08105.pdf
+url_pdf: "https://arxiv.org/pdf/1910.08105.pdf"
 url_poster: ""
 url_project: ""
 #url_slides: ""
-url_source: https://www.sciencedirect.com/science/article/abs/pii/S0925231219316169
+url_source: "https://www.sciencedirect.com/science/article/abs/pii/S0925231219316169"
 #url_video: ""
 ---
