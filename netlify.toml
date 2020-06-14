@@ -1,5 +1,5 @@
 [build]
-publish = "jgammerman/jamesgammerman/public/"
+publish = "jamesgammerman/public/"
 command = "hugo"
 
 [context.production.environment]
