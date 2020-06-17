@@ -1,5 +1,5 @@
 ---
-title: "Training Course: Business Analytics in R - An Introduction to Statistical Programming"
+title: "Business Analytics in R - An Introduction to Statistical Programming"
 event: Training Course
 #event_url: https://example.org
 
@@ -8,18 +8,19 @@ address:
 #  city: Odessa
   country: Ukraine
 
-summary: Booklet for a training course I co-authored and have presented several times to company employees across the UK.
+summary: Booklet for a training course I co-authored and have presented several times to company employees across the UK. The course introduces statistical and machine learning techniques and applies them in business contexts using the R programming language.
 
-Abstract: Booklet for a training course I co-authored with my colleague Timothy Wong, and have presented several times to company employees across the UK.
+Abstract: Booklet for a training course I co-authored with my colleague Timothy Wong, and have presented several times to company employees across the UK. The course introduces statistical and machine learning techniques and applies them in business contexts using the R programming language.
 
 # Talk start and end times.
 #   End time can optionally be hidden by prefixing the line with `#`.
 date: "2019-05-10T13:00:00Z"
+#date: ""
 #date_end: "2030-06-01T15:00:00Z"
 all_day: true
 
 # Schedule page publish date (NOT talk date).
-#publishDate: "2017-01-01T00:00:00Z"
+#publishDate: "2019-05-13T00:00:00Z"
 
 authors: []
 tags: []
@@ -60,9 +61,7 @@ url_video: ""
 math: false
 ---
 
-I enjoy teaching and have given several training courses to colleagues across the country. This training course introduces statistical and machine learning techniques and applies them in business contexts using the R programming language.
-
-You can find more photographs from these workshops below.
+I enjoy teaching and have given several training courses to colleagues across the country. You can find more photographs from these workshops below.
 
 ![Me teaching in Edinburgh 1](/img/PhotosOfMeForBlog/me_workshop2.jpg)
 

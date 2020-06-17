@@ -6,7 +6,7 @@ authors:
 education:
   courses:
   - course: MSc in Machine Learning
-    institution: Royal Holloway University
+    institution: Royal Holloway University of London
     year: 2018
   - course: MSci in Chemistry
     institution: Imperial College London
@@ -16,9 +16,9 @@ interests:
 - Classical Machine Learning
 - Deep Learning
 - Natural Language Processing / Text Mining
+- Reliable Machine Learning (i.e. Managing Uncertainty)
 - Visualisation
 - Data Analysis
-- Conformal Prediction (Hedging Predictions in ML)
 
 organizations:
 - name: Centrica
@@ -28,6 +28,9 @@ social:
 - icon: envelope
   icon_pack: fas
   link: "mailto:jgammerman@gmail.com"
+- icon: linkedin
+  icon_pack: fab
+  link: https://www.linkedin.com/in/jamesgammerman/
 - icon: twitter
   icon_pack: fab
   link: https://twitter.com/jamesgammerman
@@ -45,8 +48,8 @@ title: James Gammerman
 ---
 
 I am a data scientist working at the British energy supplier [Centrica (British Gas)](https://www.centrica.com/).   
-I have three years of professional experience in data science, and seven years in data analysis more generally.
+I have 3 years of professional experience in data science, and 7 years in data analysis more generally.
 
-My main area of interest is machine learning, in which I have a Masters degree from Royal Holloway University of London (2018). I enjoy applying machine learning and statistical techniques to business data. I have also recently started publishing research in academic journals.
+My main area of interest is machine learning, in which I have a Masters degree from Royal Holloway University of London (2018). I enjoy applying machine learning and statistical techniques to business data. I have also recently started publishing research related to my commercial work in academic journals.
 
 Outside of my career my main hobbies are socialising, sports, music and learning languages.
