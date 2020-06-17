@@ -22,7 +22,7 @@ publication: '*Neurocomputing, 397:279-291, 2020*'
 publication_short: ""
 publication_types:
 - "2"
-publishDate: "2020-07-15T00:00:00Z"
+publishDate: "2020-06-15T00:00:00Z"
 #slides: example
 summary: This paper was developed from my MSc thesis and published in Neurocomputing (volume 397). It introduces a novel clustering technique which also incorporates anomaly detection.
 
