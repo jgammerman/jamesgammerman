@@ -30,7 +30,7 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message= FALSE, cache = TRUE
 
 library(tidyverse)
 library(scales)
-theme_set(theme_minimal())
+#theme_set(theme_minimal())
 ```
 
 For this first blog post I thought I'd take a recent #TidyTuesday dataset and do some analysis of it. Where better to start than one of my favourite things? Cocktails!
