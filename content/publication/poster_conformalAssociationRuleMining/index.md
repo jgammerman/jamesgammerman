@@ -42,7 +42,7 @@ publication_types:
 
 publishDate: "2019-09-11T00:00:00Z"
 # slides: example
-summary: This poster abstract was published in the Proceedings of Machine Learning Research (volume 105), and introduces a novel machine learning technique for database cleaning.
+summary: This poster abstract was published in the Proceedings of Machine Learning Research (volume 105, 2019), and introduces a novel machine learning technique for database cleaning.
 tags:
 #- Source Themes
 url_code: ''

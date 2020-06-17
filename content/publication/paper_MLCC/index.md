@@ -25,7 +25,7 @@ publication_types:
 - "2"
 publishDate: "2020-06-15T00:00:00Z"
 #slides: example
-summary: This paper was developed from my MSc thesis and published in Neurocomputing (volume 397). It introduces a novel clustering technique which also incorporates anomaly detection.
+summary: This paper was developed from my MSc thesis and published in Neurocomputing (volume 397, 2020). It introduces a novel clustering technique which also incorporates anomaly detection.
 
 tags:
 #- Source Themes
