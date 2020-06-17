@@ -26,8 +26,8 @@ authors: []
 
 
 
-<p>For this first blog post I thought I’d take a recent #TidyTuesday dataset and do some analysis of it. Where better to start than one of my favourite things? Cocktails!</p>
-<p>I will apply the unsupervised learning technique principal component analysis (PCA) to look for patterns in this data.</p>
+<p>For this first blog post I thought I’d take a recent #TidyTuesday dataset and do some analysis of it. Where better to start than one of my favourite things? Cocktails! I enjoyed watching Julia Silge and David Robinson analysing this particular dataset, and I’ve taken some of their ideas in this post, so they deserve acknowledgement.</p>
+<p>I will first clean the data, do some exploratory analysis, then apply some unsupervised learning techniques to look for patterns.</p>
 <p>Let’s load the cocktails receipes dataset and take a quick look at it:</p>
 <pre class="r"><code>boston_cocktails &lt;- readr::read_csv(&quot;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-05-26/boston_cocktails.csv&quot;)
 
@@ -68,7 +68,7 @@ boston_cocktails %&gt;% head()</code></pre>
 ## 18 Pineapple Juice      47
 ## 19 Bourbon whiskey      38
 ## 20 Orange Bitters       38</code></pre>
-<p>Look at entries 2, 13 and 17. It’s all lemon juice! We need to do some cleaning…</p>
+<p>Look at entries 2, 13 and 17. It’s all lemon juice with different names! We need to do some data cleaning…</p>
 <pre class="r"><code>cocktails_parsed &lt;- boston_cocktails %&gt;%
   mutate(
     ingredient = str_to_lower(ingredient),

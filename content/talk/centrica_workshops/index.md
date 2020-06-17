@@ -8,16 +8,17 @@ address:
 #  city: Odessa
   country: Ukraine
 
-summary: Booklet for a training course I co-authored and have presented several times to company employees across the UK. The course introduces statistical and machine learning techniques and applies them in business contexts using the R programming language.
+summary: This is a training course that I co-authored and have presented several times to company employees across the UK. The course introduces statistical and machine learning techniques and applies them in business contexts using the R programming language.
 
-Abstract: Booklet for a training course I co-authored with my colleague Timothy Wong, and have presented several times to company employees across the UK. The course introduces statistical and machine learning techniques and applies them in business contexts using the R programming language.
+Abstract: This is a training course I co-authored with my colleague Timothy Wong, and have presented several times to company employees across the UK. The course introduces statistical and machine learning techniques and applies them in business contexts using the R programming language. The source materials can be found [here](files/Business-Analytics-in-R.pdf).
 
 # Talk start and end times.
 #   End time can optionally be hidden by prefixing the line with `#`.
-date: "2019-05-10T13:00:00Z"
+date: "2018-05-01T13:00:00Z"
 #date: ""
-#date_end: "2030-06-01T15:00:00Z"
-all_day: true
+#date_end: "2019-06-01T15:00:00Z"
+#all_day: true
+date_print: "Various"
 
 # Schedule page publish date (NOT talk date).
 #publishDate: "2019-05-13T00:00:00Z"

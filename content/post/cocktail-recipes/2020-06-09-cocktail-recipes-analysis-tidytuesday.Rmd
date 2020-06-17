@@ -33,9 +33,9 @@ library(scales)
 theme_set(theme_minimal())
 ```
 
-For this first blog post I thought I'd take a recent #TidyTuesday dataset and do some analysis of it. Where better to start than one of my favourite things? Cocktails!
+For this first blog post I thought I'd take a recent #TidyTuesday dataset and do some analysis of it. Where better to start than one of my favourite things? Cocktails! I enjoyed watching Julia Silge and David Robinson analysing this particular dataset, and I've taken some of their ideas in this post, so they deserve acknowledgement. 
 
-I will apply the unsupervised learning technique principal component analysis (PCA) to look for patterns in this data.
+I will first clean the data, do some exploratory analysis, then apply some unsupervised learning techniques to look for patterns.
 
 Let's load the cocktails receipes dataset and take a quick look at it: 
 
@@ -53,7 +53,7 @@ boston_cocktails %>%
   slice(1:20)
 ```
 
-Look at entries 2, 13 and 17. It's all lemon juice! We need to do some cleaning...
+Look at entries 2, 13 and 17. It's all lemon juice with different names! We need to do some data cleaning...
 
 ```{r}
 cocktails_parsed <- boston_cocktails %>%

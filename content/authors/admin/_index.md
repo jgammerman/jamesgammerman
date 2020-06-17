@@ -16,7 +16,7 @@ interests:
 - Classical Machine Learning
 - Deep Learning
 - Natural Language Processing / Text Mining
-- Reliable Machine Learning (i.e. Managing Uncertainty)
+- Reliable Machine Learning (Conformal Prediction)
 - Visualisation
 - Data Analysis
 
