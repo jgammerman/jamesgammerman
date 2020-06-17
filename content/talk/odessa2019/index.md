@@ -10,7 +10,7 @@ address:
 
 summary: A talk I gave on machine learning in Ukraine in 2018.
 
-Abstract: "This is a [recording](https://www.youtube.com/watch?v=n5iz5GPdO5Y) of a talk I gave at the University of Odessa in Ukraine in Odessa. In it I gave an outline of machine learning fundamentals and then touched on more recent developments and future prospects."
+Abstract: "This is a [recording](https://www.youtube.com/watch?v=n5iz5GPdO5Y) of a talk I gave at the Mechnikov University of Odessa in Ukraine. In it I gave an outline of machine learning fundamentals and then touched on more recent developments and future prospects."
 
 # Talk start and end times.
 #   End time can optionally be hidden by prefixing the line with `#`.
