@@ -14,10 +14,10 @@ Abstract: This is a training course I co-authored with my colleague Timothy Wong
 
 # Talk start and end times.
 #   End time can optionally be hidden by prefixing the line with `#`.
-date: "2018-05-01T13:00:00Z"
+date: "2018-01-01T13:00:00Z"
 #date: ""
-#date_end: "2019-06-01T15:00:00Z"
-#all_day: true
+date_end: "2020-01-01T15:00:00Z"
+all_day: true
 date_print: "Various"
 
 # Schedule page publish date (NOT talk date).
