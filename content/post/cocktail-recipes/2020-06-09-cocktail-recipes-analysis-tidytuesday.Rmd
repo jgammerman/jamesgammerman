@@ -1,36 +1,36 @@
 ---
 title: 'Cocktail recipes analysis for #TidyTuesday'
-author: James Gammerman
+author: "James Gammerman"
 date: '2020-06-09'
-slug: cocktail-recipes-analysis-tidytuesday
-categories:
-  - R
-tags:
-  - rstats
-  - unsupervised learning
-  - tidytuesday
-subtitle: ''
-summary: ''
-authors: []
-lastmod: '2020-06-09T23:45:28+01:00'
+categories: R
+draft: no
 featured: no
-image: 
+header:
+  caption: 'Image credit: [**Youtube**](https://www.youtube.com/watch?v=c6GV_vRlIIA)'
+  image: blog/cocktails.jpg
+image:
   caption: ''
   focal_point: ''
   preview_only: no
+lastmod: '2020-06-09T23:45:28+01:00'
 projects: []
-draft: false
-header:
-  image: "blog/cocktails.jpg"
-  caption: "Image credit: [**Youtube**](https://www.youtube.com/watch?v=c6GV_vRlIIA)"
+slug: cocktail-recipes-analysis-tidytuesday
+subtitle: ''
+summary: ''
+tags:
+- rstats
+- unsupervised learning
+- tidytuesday
+authors: []
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message= FALSE, cache = TRUE, dpi = 180)
-
+knitr::opts_chunk$set(cache = TRUE, warning = FALSE, message = FALSE, 
+                      echo = TRUE, dpi = 300, cache.lazy = FALSE,
+                      tidy = "styler", fig.width = 8, fig.height = 5)
 library(tidyverse)
 library(scales)
-#theme_set(theme_minimal())
+theme_set(theme_minimal())
 ```
 
 For this first blog post I thought I'd take a recent #TidyTuesday dataset and do some analysis of it. Where better to start than one of my favourite things? Cocktails!
