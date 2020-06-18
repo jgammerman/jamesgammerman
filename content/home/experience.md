@@ -31,8 +31,6 @@ date_format = "Jan 2006"
       + Applying machine learning and statistical modelling techniques to company data
       + Other stages of the data science life cycle (eg. data cleaning/preprocessing, exploratory data analysis, feature engineering, model deployment)
 
-  * Participated in several value-adding projects
-
   * Training colleagues in machine learning and statistical programming
 
       + Instructor for several 3-day workshops across the UK
