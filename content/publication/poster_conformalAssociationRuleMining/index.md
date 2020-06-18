@@ -47,7 +47,7 @@ tags:
 #- Source Themes
 url_code: ''
 url_dataset: ''
-url_pdf: http://proceedings.mlr.press/v105/balinsky19a/balinsky19a.pdf
+url_pdf: http://proceedings.mlr.press/v105/balinsky19a.html
 url_poster: 'files/conformalARM_poster_v2.pdf'
 url_project: ""
 url_slides: ""
