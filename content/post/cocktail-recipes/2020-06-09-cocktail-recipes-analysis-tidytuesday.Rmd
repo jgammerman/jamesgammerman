@@ -3,7 +3,9 @@ title: 'Cocktail recipes analysis for #TidyTuesday'
 author: "James Gammerman"
 date: '2020-06-09'
 categories: R
-draft: no
+draft: yes
+editor_options:
+  chunk_output_type: inline
 featured: no
 header:
   caption: 'Image credit: [**Youtube**](https://www.youtube.com/watch?v=c6GV_vRlIIA)'
@@ -25,17 +27,24 @@ authors: []
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(cache = TRUE, warning = FALSE, message = FALSE, 
+knitr::opts_chunk$set(cache = FALSE, warning = FALSE, message = FALSE, 
                       echo = TRUE, dpi = 300, cache.lazy = FALSE,
                       tidy = "styler", fig.width = 8, fig.height = 5)
 library(tidyverse)
 library(scales)
+library(tidytext)
 theme_set(theme_minimal())
 ```
 
-For this first blog post I thought I'd take a recent #TidyTuesday dataset and do some analysis of it. Where better to start than one of my favourite things? Cocktails! I enjoyed watching Julia Silge and David Robinson analysing this particular dataset, and I've taken some of their ideas in this post, so they deserve acknowledgement. 
+{{% toc %}} 
 
-I will first clean the data, do some exploratory analysis, then apply some unsupervised learning techniques to look for patterns.
+## Introduction
+
+For this first blog post I thought I'd take a recent [#TidyTuesday]("https://github.com/rfordatascience/tidytuesday") dataset and do some analysis of it. Where better to start than one of my favourite things? Cocktails! You can find the dataset and information about it [here]("https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-05-26/readme.md").
+
+Firstly I'd like to acknowledge [Julia Silge]("https://juliasilge.com/blog/cocktail-recipes-umap/") and [David Robinson]("https://www.youtube.com/watch?v=EC0SVkFB2OU"), whose approaches to analysing this data I enjoyed. In this post I've taken some of their ideas and then developed them for my own purposes.
+
+I will first clean the data, do some exploratory analysis, then apply some unsupervised learning techniques to see what patterns we can find.
 
 Let's load the cocktails receipes dataset and take a quick look at it: 
 
@@ -53,58 +62,273 @@ boston_cocktails %>%
   slice(1:20)
 ```
 
-Look at entries 2, 13 and 17. It's all lemon juice with different names! We need to do some data cleaning...
+Look at entries 2, 13 and 17. It's all just lemon juice with different names! We need to do some data cleaning. In the next section we modify the `ingredient` column to deal with various issues described in the in-line comments.
 
 ```{r}
+# Credit to Julia Silge for much of this code
 cocktails_parsed <- boston_cocktails %>%
   mutate(
-    ingredient = str_to_lower(ingredient),
-    ingredient = str_replace_all(ingredient, "-", " "),
+    ingredient = str_to_lower(ingredient),  # make everything lower case
+    ingredient = str_replace_all(ingredient, "-", " "), # Remove dashes
+    # Remove some stop words
     ingredient = str_remove(ingredient, " liqueur$"),
     ingredient = str_remove(ingredient, " (if desired)$"),
+    # Consolidate all types of bitters into 'bitters', lemons to 'lemon juice', whiskies to 'whiskey', etc
     ingredient = case_when(
       str_detect(ingredient, "bitters") ~ "bitters",
       str_detect(ingredient, "lemon") ~ "lemon juice",
       str_detect(ingredient, "lime") ~ "lime juice",
       str_detect(ingredient, "grapefruit") ~ "grapefruit juice",
       str_detect(ingredient, "orange") ~ "orange juice",
+      str_detect(ingredient, "whiskey") ~ "whiskey",
+      str_detect(ingredient, "rum") ~ "rum",
       TRUE ~ ingredient
     ),
+    # Looks like units of bitters are erroneously given as ounces - change this to 'dash'
     measure = case_when(
       str_detect(ingredient, "bitters") ~ str_replace(measure, "oz$", "dash"),
       TRUE ~ measure
     ),
+    # Change fractions to decimals in the measure column
     measure = str_replace(measure, " ?1/2", ".5"),
     measure = str_replace(measure, " ?3/4", ".75"),
     measure = str_replace(measure, " ?1/4", ".25"),
+    # parse the number out of the measure
     measure_number = parse_number(measure),
     measure_number = if_else(str_detect(measure, "dash$"),
       measure_number / 50,
       measure_number
     )
-  ) %>%
-  add_count(ingredient) %>%
-  filter(n > 15) %>%
+  ) 
+cocktails_parsed
+```
+
+Let's have another look at the most frequent ingredients:
+
+```{r}
+cocktails_parsed %>%
+  count(ingredient, sort = TRUE)
+
+num_ingreds <- cocktails_parsed %>% distinct(ingredient) %>% count()
+```
+
+We still have `r num_ingreds` of them, that's too many! Let's filter for ingredients that appear at least 15 times:
+
+```{r}
+cocktails_parsed_filtered <- cocktails_parsed %>% 
+  add_count(ingredient) %>% # get a count of ingredients so we can filter out rare ones
+  filter(n >= 15) %>%  # ingredient must appear at least 15 times
   select(-n) %>%
   distinct(row_id, ingredient, .keep_all = TRUE) %>%    # to stop repetitions e.g. if we had lemon slice and lemon juice in a recipe then we will end up with 2 'lemon's as per our mutate() calls earlier
   na.omit()
 
-cocktails_parsed
+num_ingreds <- cocktails_parsed_filtered %>%
+  distinct(ingredient) %>% 
+  summarise(n = n()) %>% 
+  as.integer()
+
+num_ingreds
 ```
 
-Ok now let's take another look at the top ingredients:
+So we now have `r num_ingreds` different ingredients in our dataset. Time for some exploratory analysis.
+
+## Exploratory Data Analysis
+
+Let's take another look at the top ingredients, this time in graph form:
 
 ```{r}
-cocktails_parsed %>% 
+cocktails_parsed_filtered %>% 
         count(ingredient, sort = TRUE) %>% 
         head(20) %>% 
         mutate(ingredient = fct_reorder(ingredient, n)) %>% 
         ggplot(aes(n, ingredient)) + 
         geom_col() +
-        labs(title = "Most common ingredients in Mr Boston recipes")
+        labs(title = "Most common ingredients in cocktail recipes")
 ```
 
-This looks much better. Unsurprisingly lemon juice is at the top, while the top alcoholic ingredient is gin. I almost want a G&T already...
+This looks much better. Unsurprisingly lemon juice is at the top, while the top alcoholic ingredient is gin closely followed by rum. Bitters, whiskey and vodka are also very popular, which makes sense if you frequent bars quite often --like I do--.
+
+Let's see how these numbers are broken down by another of the variables, category of cocktail: 
+
+```{r}
+
+n_recipes <- n_distinct(cocktails_parsed_filtered$name)  # get the total no.recipes
+
+cocktails_parsed_filtered %>% 
+        mutate(category = fct_lump_n(category, 8),  # Get the 6 most frequent categories and lump the rest into 'Other'
+               ingredient = fct_lump_n(ingredient, 20)) %>% 
+        filter(ingredient != "Other") %>% 
+        count(category, ingredient, sort = TRUE) %>%  # D. Robinson included this line a few lines too early, e.g. vodka was erroneously being included in 'Other' 
+        mutate(ingredient = fct_reorder(ingredient, n, sum)) %>% 
+        ggplot(aes(n/n_recipes, ingredient, fill = category)) +   # turn x-axis into %
+        geom_col() +
+        scale_x_continuous(labels = percent_format()) +
+        scale_fill_brewer(palette = "Set1") + # change default colour scheme
+        labs(title = "Most common ingredients in cocktail recipes",
+             x = "% of all recipes",
+             y = "Ingredient",
+             fill = "Category")
+```
+
+I think this break-down by category isn't particularly insightful or reliable - for example, most drinks containing gin aren't in the 'Gin' category. The rather vague 'Cocktail Classics' category seems to include plenty of drinks which could be placed in other categories. Perhaps a better way to organise this dataset would have been to allow multiple categories per drink?...
+
+## Co-occurrence of ingredients
+
+Let's look at another question now: Which ingredients tend to appear together in the same recipe?
+
+First we calculate correlation between ingredients:
+
+```{r}
+library(widyr) 
+library(tidytext)
+
+ingredient_pairs <- cocktails_parsed_filtered %>% 
+        add_count(ingredient) %>%   # like group_by then count
+        filter(n >= 5) %>% # filter only for ingredients that appear in min. 10 recipes
+        pairwise_cor(ingredient, name, sort = TRUE)
+
+ingredient_pairs
+```
+
+Now let's see which ingredients are most closely correlated with some of the most popular ones:
+
+
+```{r}
+ingredient_pairs %>% 
+        filter(item1 %in% c("lemon juice", "gin", "rum", "whiskey", "vodka")) %>% 
+        group_by(item1) %>% 
+        top_n(8, correlation) %>% 
+        ungroup() %>%   # wasn't included in D. Robinson's code, but is needed
+        mutate(item2 = reorder_within(item2, by = correlation, within = item1)) %>%  # need the 'within' argument for faceting
+        ggplot(aes(correlation, item2)) +
+        geom_col() +
+        facet_wrap(~ item1, scales = "free_y") +
+        scale_y_reordered() +
+        labs(title = "Which ingredients are most correlated with particular ingredients?",
+             y = "Most correlated ingredients")
+```
+
+These plots also make sense on inspection: gin is often found with vermouth, which is how you make martinis and negronis; lemon juice is often found with sugar/syrup to balance out the acidity; while rum and lime juice is a classic combination as are vodka/cranberry and whiskey/bitters.
+
+I didn't realise that gin is often combined with apricot-flavoured brandy but further investigation reveals that there are 18 such drinks!:
+
+```{r}
+cocktails_parsed_filtered %>% 
+  group_by(name) %>%  
+  filter(all(c("gin", "apricot flavored brandy") %in% ingredient)) %>% 
+  arrange(name) %>% 
+  distinct(name)
+```
+
+
+## Network analysis
+
+R has a couple of nice packages for displaying network graphs, `ggraph` and `igraph`. Let's use them to plot the 'connectedness' of our data. Although not formally an unsupervised learning technique this should give us an idea as to what kind of clusters exist in the data.
+
+```{r}
+library(ggraph)
+library(igraph)
+library(ggrepel)
+
+ingredients_summarized <- cocktails_parsed_filtered %>%         
+        group_by(name) %>% 
+        mutate(percentile = row_number() / n()) %>%  # Tells us relative position of ingredient in drink - accounts for fact that some recipes have many ingredients and some don't
+        ungroup() %>% 
+        group_by(ingredient) %>% 
+        summarize(n = n(),
+                  avg_position = mean(percentile), # get average position in drink of ingredient
+                  avg_serving = mean(measure_number, na.rm = TRUE)) %>%  # get average serving measure of ingredient
+        arrange(desc(n)) 
+
+# Get top 70 correlated ingredients
+top_cors <- ingredient_pairs %>% head(70)  
+
+# Filter ingredients_summarised for only highly correlated ingredients
+ingredient_info <- ingredients_summarized %>% 
+        filter(ingredient %in% top_cors$item1) %>% 
+        distinct()
+
+# Generate network graph
+top_cors %>% 
+        graph_from_data_frame(vertices = ingredient_info) %>% 
+        ggraph(layout = "fr") +
+        geom_edge_link() +
+        geom_node_text(aes(label = name), repel = TRUE) +
+        geom_node_point(aes(size = 1.1* n)) +        
+        geom_node_point(aes(size = n, color = avg_position)) +
+        scale_color_gradient2(low = "blue", high = "red", midpoint = .8,
+                              labels = scales::percent_format()) +
+        labs(size = "# of recipes",
+             color = "Avg position in drink",
+             title = "Network of cocktail ingredients",
+             subtitle = "Connected ingredients tend to appear in the same drink. A bluer colour indicates that it tends to appear earlier in drinks.")
+```
+
+This is a nice plot! As before, we see popular combinations of ingredients (e.g. whiskey/bitters, gin/vermouth, lemon juice/sugar) but now we can see the full picture. Unsurprisingly the spirits tend to be quite far apart (except for gin and brandy) and surrounded by flavouring agents such as juices and soft liqueurs. The bluer colour of these spirits show that they tend to be earlier in the drink recipes.
+
+## Principal component analysis
+
+Finally, we can try a more formal unsupervised learning technique: principal components analysis (PCA). For the sake of brevity I won't explain PCA here for the uninitiated, but I will summarise its purpose:
+
+> "When faced with a large set of correlated variables, principal components allow us to summarize this set >with a smaller number of representative variables that collectively explain most of the variability in the >original set...PCA also serves as a tool for data visualization."
+
+`r tufte::quote_footer('--- An Introduction to Statistical Learning, James/Witten/Hastie/Tibshirani ')`
+
+In other words
+
+```{r}
+cocktails_df <- cocktails_parsed_filtered %>%
+  select(-ingredient_number, -row_id, -measure) %>%
+  pivot_wider(names_from = ingredient, values_from = measure_number, values_fill = 0) %>%
+  janitor::clean_names() %>% 
+  arrange(name) %>% 
+  na.omit()
+
+cocktails_df
+```
+
+
+
+```{r}
+
+library(tidymodels)
+
+pca_rec <- recipe(~., data = cocktails_df) %>%
+  update_role(name, category, new_role = "id") %>%
+  step_normalize(all_predictors()) %>%   # centers and scales all predictors
+  step_pca(all_predictors())
+
+pca_prep <- prep(pca_rec) 
+
+tidied_pca <- tidy(pca_prep, 2)
+
+tidied_pca %>%
+  filter(component %in% paste0("PC", 1:3)) %>%
+  mutate(component = fct_inorder(component)) %>%
+  ggplot(aes(value, terms, fill = terms)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~component, nrow = 1) +
+  labs(y = NULL)
+```
+
+```{r}
+library(tidytext)
+
+tidied_pca %>%
+  filter(component %in% paste0("PC", 1:4)) %>%
+  group_by(component) %>%
+  top_n(8, abs(value)) %>%
+  ungroup() %>%
+  mutate(terms = reorder_within(terms, by = abs(value), within = component)) %>%  # from tidytext package - reorders column before plotting with faceting, such that the values are ordered within each facet...needs scale_x_reordered or scale_y_reordered to be used later
+  ggplot(aes(abs(value), terms, fill = value > 0)) +
+  geom_col() +
+  facet_wrap(~component, scales = "free_y") +
+  scale_y_reordered() +  # see earlier comment
+  labs(
+    x = "Absolute value of contribution",
+    y = NULL, fill = "Positive?"
+  )
+```
 
 
 

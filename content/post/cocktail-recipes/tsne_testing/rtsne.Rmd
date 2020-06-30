@@ -1,0 +1,50 @@
+---
+title: "Testing out t-SNE"
+output: html_notebook
+---
+
+```{r}
+library(M3C)
+library(tidyverse)
+library(Rtsne)
+```
+
+Tutorial link: https://ajitjohnson.com/tsne-for-biologist-tutorial/
+
+```{r}
+## Learning t-SNE Plotting
+## Load dataset
+IR <- iris # Loading the iris dataset into a object called IR
+
+## Split IR into two objects: 1) containing measurements 2) containing species type
+IR_data <- IR[ ,1:4] # We are sub-setting IR object such as to include 'all rows' and columns 1 to 4.
+IR_species <- IR[ ,5] # We are sub-setting IR object such as to include 'all rows' and column 5.
+
+## Load the t-SNE library
+library(Rtsne)
+
+## Run the t-SNE algorithm and store the results into an object called tsne_results
+tsne_results <- Rtsne(IR_data, perplexity=30, check_duplicates = FALSE) # You can change the value of perplexity and see how the plot changes
+
+## Generate the t_SNE plot
+par(mfrow=c(1,2)) # To plot two images side-by-side
+plot(tsne_results$Y, col = "blue", pch = 19, cex = 1.5) # Plotting the first image
+plot(tsne_results$Y, col = "black", bg= IR_species, pch = 21, cex = 1.5) # Second plot: Color the plot by the real species type (bg= IR_species)
+```
+
+
+```{r}
+test_df <- cocktails_df %>% select(-c(1,2))
+
+tsne_test <- Rtsne(test_df, perplexity = 20, check_duplicates = FALSE)
+
+## Generate the t_SNE plot
+#par(mfrow=c(1,2)) # To plot two images side-by-side
+plot(tsne_test$Y, col = "blue", pch = 19, cex = 1.5) # Plotting the first image
+
+tt <- as_tibble(tsne_test$Y)
+
+ggplot(data = tt, mapping = aes(x = V1, y = V2, colour = cocktails_df$category)) +
+        geom_point()
+```
+

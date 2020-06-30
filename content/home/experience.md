@@ -48,5 +48,5 @@ date_format = "Jan 2006"
   date_end = "2017-04-01"
   description = """
 
-  Gas & Power Marketing and Trading: Wide range of data analytics tasks/projects relating to European markets"""
+  * Gas & Power Marketing and Trading: Wide range of data analytics tasks/projects relating to European markets"""
 +++

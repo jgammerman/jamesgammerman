@@ -10,7 +10,6 @@ address:
 
 summary: This is a training course that I co-authored and have presented several times to company employees across the UK. The course introduces statistical and machine learning techniques and applies them in business contexts using the R programming language.
 
-Abstract: This is a training course I co-authored with my colleague Timothy Wong, and have presented several times to company employees across the UK. The course introduces statistical and machine learning techniques and applies them in business contexts using the R programming language. The source materials can be found [here](files/Business-Analytics-in-R.pdf).
 
 # Talk start and end times.
 #   End time can optionally be hidden by prefixing the line with `#`.
@@ -62,7 +61,7 @@ url_video: ""
 math: false
 ---
 
-I enjoy teaching and have given several training courses to colleagues across the country. You can find more photographs from these workshops below.
+This is a training course I co-authored with my colleague Timothy Wong, and have presented several times to company employees across the UK. The course introduces statistical and machine learning techniques and applies them in business contexts using the R programming language. The source materials can be found [here](files/Business-Analytics-in-R.pdf). You can find more photographs from the workshops below.
 
 ![Me teaching in Edinburgh 1](/img/PhotosOfMeForBlog/me_workshop2.jpg)
 
