@@ -4,8 +4,6 @@ author: "James Gammerman"
 date: '2020-07-03'
 categories: R
 draft: no
-editor_options:
-  chunk_output_type: inline
 featured: no
 header:
   caption: 'Image credit: [**Youtube**](https://www.youtube.com/watch?v=c6GV_vRlIIA)'
@@ -27,7 +25,7 @@ authors: []
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(cache = FALSE, warning = FALSE, message = FALSE, 
+knitr::opts_chunk$set(cache = FALSE, warning = FALSE, message = FALSE,
                       echo = TRUE, dpi = 300, cache.lazy = FALSE,
                       tidy = "styler", fig.width = 8, fig.height = 5)
 library(tidyverse)
@@ -46,7 +44,7 @@ I will first clean the data, do some exploratory analysis, then apply some unsup
 
 ## Data pre-processing
 
-Let's load the cocktails receipes dataset and take a quick look at it: 
+Let's load the cocktails receipes dataset and take a quick look at it:
 
 ```{r}
 boston_cocktails <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-05-26/boston_cocktails.csv")
@@ -60,7 +58,7 @@ Let's see what the most common ingredients are:
 
 ```{r}
 boston_cocktails %>%
-  count(ingredient, sort = TRUE) %>% 
+  count(ingredient, sort = TRUE) %>%
   slice(1:20)
 ```
 
@@ -101,7 +99,7 @@ cocktails_parsed <- boston_cocktails %>%
       measure_number / 50,
       measure_number
     )
-  ) 
+  )
 cocktails_parsed
 ```
 
@@ -119,7 +117,7 @@ num_ingreds <- cocktails_parsed %>% distinct(ingredient) %>% count()
 We now have `r num_ingreds` of them, which is still too many! Let's filter for ingredients that appear at least 15 times:
 
 ```{r}
-cocktails_parsed_filtered <- cocktails_parsed %>% 
+cocktails_parsed_filtered <- cocktails_parsed %>%
   add_count(ingredient) %>% # get a count of ingredients so we can filter out rare ones
   filter(n >= 15) %>%  # ingredient must appear at least 15 times
   select(-n) %>%
@@ -127,8 +125,8 @@ cocktails_parsed_filtered <- cocktails_parsed %>%
   na.omit()
 
 num_ingreds <- cocktails_parsed_filtered %>%
-  distinct(ingredient) %>% 
-  summarise(n = n()) %>% 
+  distinct(ingredient) %>%
+  summarise(n = n()) %>%
   as.integer()
 
 num_ingreds
@@ -141,11 +139,11 @@ So we now have `r num_ingreds` different ingredients in our dataset. Time for so
 Let's take another look at the most commong ingredients, this time as graph:
 
 ```{r}
-cocktails_parsed_filtered %>% 
-        count(ingredient, sort = TRUE) %>% 
-        head(20) %>% 
-        mutate(ingredient = fct_reorder(ingredient, n)) %>% 
-        ggplot(aes(n, ingredient)) + 
+cocktails_parsed_filtered %>%
+        count(ingredient, sort = TRUE) %>%
+        head(20) %>%
+        mutate(ingredient = fct_reorder(ingredient, n)) %>%
+        ggplot(aes(n, ingredient)) +
         geom_col() +
         labs(title = "Top 20 most common ingredients in cocktail recipes",
              x = "Count")
@@ -159,12 +157,12 @@ Let's see how these numbers are broken down by another of the variables, categor
 
 n_recipes <- n_distinct(cocktails_parsed_filtered$name)  # get the total no.recipes
 
-cocktails_parsed_filtered %>% 
+cocktails_parsed_filtered %>%
         mutate(category = fct_lump_n(category, 8),  # Get the 6 most frequent categories and lump the rest into 'Other'
-               ingredient = fct_lump_n(ingredient, 20)) %>% 
-        filter(ingredient != "Other") %>% 
-        count(category, ingredient, sort = TRUE) %>%  # D. Robinson included this line a few lines too early, e.g. vodka was erroneously being included in 'Other' 
-        mutate(ingredient = fct_reorder(ingredient, n, sum)) %>% 
+               ingredient = fct_lump_n(ingredient, 20)) %>%
+        filter(ingredient != "Other") %>%
+        count(category, ingredient, sort = TRUE) %>%  # D. Robinson included this line a few lines too early, e.g. vodka was erroneously being included in 'Other'
+        mutate(ingredient = fct_reorder(ingredient, n, sum)) %>%
         ggplot(aes(n/n_recipes, ingredient, fill = category)) +   # turn x-axis into %
         geom_col() +
         scale_x_continuous(labels = percent_format()) +
@@ -184,10 +182,10 @@ Let's look at another question now: Which ingredients tend to appear together in
 First we calculate correlation between ingredients:
 
 ```{r}
-library(widyr) 
+library(widyr)
 library(tidytext)
 
-ingredient_pairs <- cocktails_parsed_filtered %>% 
+ingredient_pairs <- cocktails_parsed_filtered %>%
         add_count(ingredient) %>%   # like group_by then count
         filter(n >= 5) %>% # filter only for ingredients that appear in min. 5 recipes
         pairwise_cor(ingredient, name, sort = TRUE)
@@ -199,10 +197,10 @@ Now let's see which ingredients are most closely correlated with some of the mos
 
 
 ```{r}
-ingredient_pairs %>% 
-        filter(item1 %in% c("lemon juice", "gin", "rum", "whiskey", "vodka")) %>% 
-        group_by(item1) %>% 
-        top_n(8, correlation) %>% 
+ingredient_pairs %>%
+        filter(item1 %in% c("lemon juice", "gin", "rum", "whiskey", "vodka")) %>%
+        group_by(item1) %>%
+        top_n(8, correlation) %>%
         ungroup() %>%   # wasn't included in D. Robinson's code, but is needed
         mutate(item2 = reorder_within(item2, by = correlation, within = item1)) %>%  # need the 'within' argument for faceting
         ggplot(aes(correlation, item2)) +
@@ -218,10 +216,10 @@ These plots make sense: gin is often found with vermouth, which is how you make 
 Incidentally I didn't realise that gin is often combined with apricot-flavoured brandy but further investigation reveals that there are 18 such drinks!:
 
 ```{r}
-cocktails_parsed_filtered %>% 
+cocktails_parsed_filtered %>%
   group_by(name) %>%  
-  filter(all(c("gin", "apricot flavored brandy") %in% ingredient)) %>% 
-  arrange(name) %>% 
+  filter(all(c("gin", "apricot flavored brandy") %in% ingredient)) %>%
+  arrange(name) %>%
   distinct(name)
 ```
 
@@ -236,26 +234,26 @@ library(igraph)
 library(ggrepel)
 
 ingredients_summarized <- cocktails_parsed_filtered %>%         
-        group_by(name) %>% 
+        group_by(name) %>%
         mutate(percentile = row_number() / n()) %>%  # Tells us relative position of ingredient in drink - accounts for fact that some recipes have many ingredients and some don't
-        ungroup() %>% 
-        group_by(ingredient) %>% 
+        ungroup() %>%
+        group_by(ingredient) %>%
         summarize(n = n(),
                   avg_position = mean(percentile), # get average position in drink of ingredient
                   avg_serving = mean(measure_number, na.rm = TRUE)) %>%  # get average serving measure of ingredient
-        arrange(desc(n)) 
+        arrange(desc(n))
 
 # Get top 70 correlated ingredients
 top_cors <- ingredient_pairs %>% head(70)  
 
 # Filter ingredients_summarised for only highly correlated ingredients
-ingredient_info <- ingredients_summarized %>% 
-        filter(ingredient %in% top_cors$item1) %>% 
+ingredient_info <- ingredients_summarized %>%
+        filter(ingredient %in% top_cors$item1) %>%
         distinct()
 
 # Generate network graph
-top_cors %>% 
-        graph_from_data_frame(vertices = ingredient_info) %>% 
+top_cors %>%
+        graph_from_data_frame(vertices = ingredient_info) %>%
         ggraph(layout = "fr") +
         geom_edge_link() +
         geom_node_text(aes(label = name), repel = TRUE) +
@@ -293,11 +291,11 @@ Essentially, PCA involves performing a linear mapping of the data to a lower-dim
 
 # Pivot the data to get the ingredients as columns i.e. get a highly-dimensional dataset
 cocktails_df <- cocktails_parsed_filtered %>%
-  mutate(category = fct_lump_n(category, 7)) %>% 
+  mutate(category = fct_lump_n(category, 7)) %>%
   select(-ingredient_number, -row_id, -measure) %>%
   pivot_wider(names_from = ingredient, values_from = measure_number, values_fill = 0) %>%
-  janitor::clean_names() %>% 
-  arrange(name) %>% 
+  janitor::clean_names() %>%
+  arrange(name) %>%
   na.omit()
 
 
@@ -309,7 +307,7 @@ pca_rec <- recipe(~., data = cocktails_df) %>%
   step_normalize(all_predictors()) %>%   # centers and scales all predictors
   step_pca(all_predictors())
 
-pca_prep <- prep(pca_rec) 
+pca_prep <- prep(pca_rec)
 
 tidied_pca <- tidy(pca_prep, 2)
 
@@ -395,30 +393,29 @@ This is another interesting plot. We see fairly distinct clusters of drinks for 
 #    filter(category == "Cocktail Classics", ingredient == "tequila") %>%
 #    distinct(name) %>%
 #    count()
-# 
-# cocktails_parsed %>% 
-#    filter(category == "Cocktail Classics", ingredient == "gin") %>% 
-#    distinct(name) %>% 
+#
+# cocktails_parsed %>%
+#    filter(category == "Cocktail Classics", ingredient == "gin") %>%
+#    distinct(name) %>%
 #    count()
-# 
-# cocktails_parsed %>% 
-#    filter(category == "Cocktail Classics", ingredient == "whiskey") %>% 
-#    distinct(name) %>% 
+#
+# cocktails_parsed %>%
+#    filter(category == "Cocktail Classics", ingredient == "whiskey") %>%
+#    distinct(name) %>%
 #    count()
-# 
+#
 # cocktails_parsed %>%
 #    filter(category == "Cocktail Classics", ingredient == "vodka") %>%
 #    distinct(name) %>%
 #    count()
-# 
-# cocktails_parsed %>% 
-#    filter(category == "Cocktail Classics", ingredient == "brandy") %>% 
-#    distinct(name) %>% 
+#
+# cocktails_parsed %>%
+#    filter(category == "Cocktail Classics", ingredient == "brandy") %>%
+#    distinct(name) %>%
 #    count()
-# 
-# cocktails_parsed %>% 
-#    filter(category == "Cocktail Classics", ingredient == "rum") %>% 
-#    distinct(name) %>% 
+#
+# cocktails_parsed %>%
+#    filter(category == "Cocktail Classics", ingredient == "rum") %>%
+#    distinct(name) %>%
 #    count()
 ```
-
