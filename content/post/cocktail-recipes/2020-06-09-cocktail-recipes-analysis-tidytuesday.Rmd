@@ -1,5 +1,5 @@
 ---
-title: 'Cocktail recipes analysis for #TidyTuesday'
+title: 'Cocktail recipes analysis & unsupervised learning'
 author: "James Gammerman"
 date: '2020-07-03'
 categories: R
@@ -12,20 +12,20 @@ image:
   caption: ''
   focal_point: ''
   preview_only: no
-lastmod: '2020-06-09T23:45:28+01:00'
+lastmod: '2020-07-02T23:45:28+01:00'
 projects: []
 slug: cocktail-recipes-analysis-tidytuesday
 subtitle: ''
 summary: ''
 tags:
 - rstats
-- unsupervised learning2
+- unsupervised learning
 - tidytuesday
 authors: []
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(cache = FALSE, warning = FALSE, message = FALSE,
+knitr::opts_chunk$set(cache = TRUE, warning = FALSE, message = FALSE,
                       echo = TRUE, dpi = 300, cache.lazy = FALSE,
                       tidy = "styler", fig.width = 8, fig.height = 5)
 library(tidyverse)
@@ -54,7 +54,7 @@ boston_cocktails %>% head()
 
 So basically on each line we have the name of the cocktail, its category, then each ingredient in it and the amount of it required. There are `r boston_cocktails %>% distinct(name) %>% count()` drinks in this dataset featuring `r boston_cocktails %>% distinct(ingredient) %>% count()` unique ingredients.
 
-Let's see what the most common ingredients are:
+Let's see what the 20 most common ingredients are:
 
 ```{r}
 boston_cocktails %>%
@@ -136,7 +136,7 @@ So we now have `r num_ingreds` different ingredients in our dataset. Time for so
 
 ## Exploratory Data Analysis
 
-Let's take another look at the most commong ingredients, this time as graph:
+Let's take another look at the most common ingredients, this time as a graph:
 
 ```{r}
 cocktails_parsed_filtered %>%
@@ -173,7 +173,7 @@ cocktails_parsed_filtered %>%
              fill = "Category")
 ```
 
-I think this break-down by category isn't particularly insightful or reliable - for example, most drinks containing gin aren't in the 'Gin' category. The rather vague 'Cocktail Classics' category seems to include plenty of drinks which could be placed in other categories. Perhaps a better way to organise this dataset would have been to allow multiple categories per drink?...We'll revisit this later.
+I think this break-down by category isn't particularly reliable - for example, most drinks containing gin aren't in the 'Gin' category. The 'Cocktail Classics' category seems to include plenty of drinks which could be placed in other categories. Perhaps a better way to organise this data would have been to allow multiple categories per drink?...We'll revisit this later.
 
 ## Co-occurrence of ingredients
 
@@ -267,9 +267,9 @@ top_cors %>%
              subtitle = "Connected ingredients tend to appear in the same drink. A bluer data point indicates \nthat it tends to appear earlier in recipes.")
 ```
 
-This is a nice plot! As before, we see popular combinations of ingredients (e.g. whiskey/bitters, gin/vermouth, lemon juice/sugar) but now we can see the full picture. If in doubt as to what kind of drink to make next time you're hosting a party this might be a good starting point!
+This is a nice plot! As before, we see popular combinations of ingredients (e.g. whiskey/bitters, gin/vermouth, lemon juice/sugar) but now we can see the full picture. Unsurprisingly the spirits tend to be quite far apart (except for gin and brandy) and surrounded by flavouring agents such as juices and soft liqueurs. The bluer colour of the spirits show that they tend to be earlier in the drink recipes.
 
-Unsurprisingly the spirits tend to be quite far apart (except for gin and brandy) and surrounded by flavouring agents such as juices and soft liqueurs. The bluer colour of the spirits show that they tend to be earlier in the drink recipes.
+If in doubt as to what kind of drink to make next time you're hosting a party this might be a good starting point!
 
 
 # Unsupservised Learning
@@ -280,7 +280,7 @@ Lastly, we can try some more formal unsupervised learning techniques to investig
 
 PCA is a classic unsupervised learning technique. I won't explain the details of it here, but for anyone unfamilar with it we can summarise the purpose of PCA as follows:
 
-> "When faced with a large set of correlated variables, PCA allow us to summarize this set with a smaller number of representative variables that collectively explain most
+> "When faced with a large set of correlated variables, PCA allows us to summarize this set with a smaller number of representative variables that collectively explain most
 of the variability in the original set...PCA also serves as a tool for data visualization."
 `r tufte::quote_footer('--- An Introduction to Statistical Learning, by James/Witten/Hastie/Tibshirani')`
 
@@ -334,7 +334,7 @@ tidied_pca %>%
 
 We can infer from this that PC1 mainly tells us about the contrast between gin/sugar/egg drinks one one side versus the rum/lime/syrup drinks on the other. PC2 is mostly about the gin/vermouth drinks (i.e. martinis) versus the sweet/eggy/lemony drinks. This tallies with our network analysis from earlier, where you can make out these little clusters in the graph if you look closely:
 
-![](annotated_network.jpg)
+![Annotated network graph](./annotated_network.jpg)
 
 
 ## t-SNE
@@ -383,9 +383,5 @@ This is another interesting plot. We see fairly distinct clusters of drinks for 
 
 * Lemon juice is by far the most common ingredient in cocktails.
 * Gin, rum and whiskey are the most common spirits.
-* Cocktails are all about classic combinations of ingredients: gin with vermouth; citrus with egg and sugar; rum with lime; whiskey with bitters...
-* Out of the spirits, tequila and vodka are considered the least 'classic' as ingredients for cocktails.  
-
-
-
-
+* Cocktails are all about good combinations of ingredients: gin with vermouth; citrus with egg and sugar; rum with lime; whiskey with bitters...
+* Out of the spirits, tequila and vodka are considered the least "classic" as ingredients.
