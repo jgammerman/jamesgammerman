@@ -1,5 +1,5 @@
 ---
-title: 'Cocktail recipes analysis & unsupervised learning'
+title: 'Cocktail recipes - analysis & unsupervised learning'
 author: "James Gammerman"
 date: '2020-07-03'
 categories: R
@@ -7,7 +7,7 @@ draft: no
 featured: yes
 header:
   caption: 'Image credit: [**Youtube**](https://www.youtube.com/watch?v=c6GV_vRlIIA)'
-  image: blog/cocktails.jpg
+  image: blog/cocktails/cocktails.jpg
 image:
   caption: ''
   focal_point: ''
@@ -334,7 +334,7 @@ tidied_pca %>%
 
 We can infer from this that PC1 mainly tells us about the contrast between gin/sugar/egg drinks one one side versus the rum/lime/syrup drinks on the other. PC2 is mostly about the gin/vermouth drinks (i.e. martinis) versus the sweet/eggy/lemony drinks. This tallies with our network analysis from earlier, where you can make out these little clusters in the graph if you look closely:
 
-![Annotated network graph](./annotated_network.jpg)
+![Annotated network graph](blog/cocktails/annotated_network.jpg)
 
 
 ## t-SNE
