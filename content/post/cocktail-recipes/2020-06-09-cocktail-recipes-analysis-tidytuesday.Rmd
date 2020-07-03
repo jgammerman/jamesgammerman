@@ -4,7 +4,7 @@ author: "James Gammerman"
 date: '2020-07-03'
 categories: R
 draft: no
-featured: no
+featured: yes
 header:
   caption: 'Image credit: [**Youtube**](https://www.youtube.com/watch?v=c6GV_vRlIIA)'
   image: blog/cocktails.jpg
@@ -388,34 +388,4 @@ This is another interesting plot. We see fairly distinct clusters of drinks for 
 
 
 
-```{r}
-# cocktails_parsed %>%
-#    filter(category == "Cocktail Classics", ingredient == "tequila") %>%
-#    distinct(name) %>%
-#    count()
-#
-# cocktails_parsed %>%
-#    filter(category == "Cocktail Classics", ingredient == "gin") %>%
-#    distinct(name) %>%
-#    count()
-#
-# cocktails_parsed %>%
-#    filter(category == "Cocktail Classics", ingredient == "whiskey") %>%
-#    distinct(name) %>%
-#    count()
-#
-# cocktails_parsed %>%
-#    filter(category == "Cocktail Classics", ingredient == "vodka") %>%
-#    distinct(name) %>%
-#    count()
-#
-# cocktails_parsed %>%
-#    filter(category == "Cocktail Classics", ingredient == "brandy") %>%
-#    distinct(name) %>%
-#    count()
-#
-# cocktails_parsed %>%
-#    filter(category == "Cocktail Classics", ingredient == "rum") %>%
-#    distinct(name) %>%
-#    count()
-```
+
