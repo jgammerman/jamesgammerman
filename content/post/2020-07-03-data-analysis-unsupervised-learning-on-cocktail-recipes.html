@@ -1,10 +1,10 @@
 ---
-title: "Cocktail recipes - analysis & unsupervised learning"
+title: "Cocktail recipes analysis for #TidyTuesday"
 author: "James Gammerman"
 date: '2020-07-03'
 categories: R
-draft: yes
-featured: no
+draft: no
+featured: yes
 header:
   caption: 'Image credit: [**Youtube**](https://www.youtube.com/watch?v=c6GV_vRlIIA)'
   image: blog/cocktails/cocktails.jpg
@@ -12,15 +12,15 @@ image:
   caption: ''
   focal_point: ''
   preview_only: no
-lastmod: '2020-07-02T23:45:28+01:00'
+lastmod: '2020-07-03T15:30:04+01:00'
 projects: []
-slug: cocktail-recipes-analysis-tidytuesday
+slug: data-analysis-unsupervised-learning-on-cocktail-recipes
 subtitle: ''
 summary: ''
 tags:
-- rstats
-- unsupervised learning
 - tidytuesday
+- unsupervised learning
+- rstats
 authors: []
 ---
 
@@ -172,7 +172,7 @@ num_ingreds</code></pre>
         geom_col() +
         labs(title = &quot;Top 20 most common ingredients in cocktail recipes&quot;,
              x = &quot;Count&quot;)</code></pre>
-<p><img src="/post/cocktail-recipes/2020-06-09-cocktail-recipes-analysis-tidytuesday_files/figure-html/unnamed-chunk-7-1.png" width="2400" /></p>
+<p><img src="/post/2020-07-03-data-analysis-unsupervised-learning-on-cocktail-recipes_files/figure-html/unnamed-chunk-7-1.png" width="3300" /></p>
 <p>This looks much better. Unsurprisingly lemon juice is at the top, while the most common alcoholic ingredient is gin closely followed by rum. Bitters, whiskey and vodka are also very popular, which won’t come as any surprise if you go to bars quite frequently <del>like I do</del>.</p>
 <p>Let’s see how these numbers are broken down by another of the variables, category of cocktail, shown in colour in the next plot. I’ve changed the x-axis to “Percentage of all recipes” so we get a better idea of how common they really are:</p>
 <pre class="r"><code>n_recipes &lt;- n_distinct(cocktails_parsed_filtered$name)  # get the total no.recipes
@@ -191,7 +191,7 @@ cocktails_parsed_filtered %&gt;%
              x = &quot;% of all recipes&quot;,
              y = &quot;Ingredient&quot;,
              fill = &quot;Category&quot;)</code></pre>
-<p><img src="/post/cocktail-recipes/2020-06-09-cocktail-recipes-analysis-tidytuesday_files/figure-html/unnamed-chunk-8-1.png" width="2400" /></p>
+<p><img src="/post/2020-07-03-data-analysis-unsupervised-learning-on-cocktail-recipes_files/figure-html/unnamed-chunk-8-1.png" width="3300" /></p>
 <p>I think this break-down by category isn’t particularly reliable - for example, most drinks containing gin aren’t in the ‘Gin’ category. The ‘Cocktail Classics’ category seems to include plenty of drinks which could be placed in other categories. Perhaps a better way to organise this data would have been to allow multiple categories per drink?…We’ll revisit this later.</p>
 </div>
 <div id="co-occurrence-of-ingredients" class="section level2">
@@ -234,7 +234,7 @@ ingredient_pairs</code></pre>
         scale_y_reordered() +
         labs(title = &quot;Which ingredients are most correlated with selected ones?&quot;,
              y = &quot;Most correlated ingredients&quot;)</code></pre>
-<p><img src="/post/cocktail-recipes/2020-06-09-cocktail-recipes-analysis-tidytuesday_files/figure-html/unnamed-chunk-10-1.png" width="2400" /></p>
+<p><img src="/post/2020-07-03-data-analysis-unsupervised-learning-on-cocktail-recipes_files/figure-html/unnamed-chunk-10-1.png" width="3300" /></p>
 <p>These plots make sense: gin is often found with vermouth, which is how you make martinis and negronis; lemon juice is often found with sugar/syrup to balance out the acidity; while rum and lime juice is a classic combination as are vodka/cranberry juice and whiskey/bitters.</p>
 <p>Incidentally I didn’t realise that gin is often combined with apricot-flavoured brandy but further investigation reveals that there are 18 such drinks!:</p>
 <pre class="r"><code>cocktails_parsed_filtered %&gt;%
@@ -304,7 +304,7 @@ top_cors %&gt;%
              color = &quot;Avg position in drink&quot;,
              title = &quot;Network of cocktail ingredients&quot;,
              subtitle = &quot;Connected ingredients tend to appear in the same drink. A bluer data point indicates \nthat it tends to appear earlier in recipes.&quot;)</code></pre>
-<p><img src="/post/cocktail-recipes/2020-06-09-cocktail-recipes-analysis-tidytuesday_files/figure-html/unnamed-chunk-12-1.png" width="2400" /></p>
+<p><img src="/post/2020-07-03-data-analysis-unsupervised-learning-on-cocktail-recipes_files/figure-html/unnamed-chunk-12-1.png" width="3300" /></p>
 <p>This is a nice plot! As before, we see popular combinations of ingredients (e.g. whiskey/bitters, gin/vermouth, lemon juice/sugar) but now we can see the full picture. Unsurprisingly the spirits tend to be quite far apart (except for gin and brandy) and surrounded by flavouring agents such as juices and soft liqueurs. The bluer colour of the spirits show that they tend to be earlier in the drink recipes.</p>
 <p>If in doubt as to what kind of drink to make next time you’re hosting a party this might be a good starting point!</p>
 </div>
@@ -364,9 +364,9 @@ tidied_pca %&gt;%
     y = NULL, fill = &quot;Positive?&quot;
   ) +
   guides(fill=FALSE)</code></pre>
-<p><img src="/post/cocktail-recipes/2020-06-09-cocktail-recipes-analysis-tidytuesday_files/figure-html/unnamed-chunk-13-1.png" width="2400" /></p>
+<p><img src="/post/2020-07-03-data-analysis-unsupervised-learning-on-cocktail-recipes_files/figure-html/unnamed-chunk-13-1.png" width="3300" /></p>
 <p>We can infer from this that PC1 mainly tells us about the contrast between gin/sugar/egg drinks one one side versus the rum/lime/syrup drinks on the other. PC2 is mostly about the gin/vermouth drinks (i.e. martinis) versus the sweet/eggy/lemony drinks. This tallies with our network analysis from earlier, where you can make out these little clusters in the graph if you look closely:</p>
-<p><img src="/cocktail-recipes/2020-06-09-cocktail-recipes-analysis-tidytuesday_files/annotated_network.png" /></p>
+<p><img src="/post/2020-07-03-data-analysis-unsupervised-learning-on-cocktail-recipes_files/annotated_network.png" /></p>
 </div>
 <div id="t-sne" class="section level2">
 <h2>t-SNE</h2>
@@ -387,7 +387,7 @@ ggplot(data = tt, mapping = aes(x = V1, y = V2)) +
       labs(title = &quot;t-SNE plot of cocktail data. Each dot is a drink.&quot;,
            x = &quot;Dimension 1&quot;,
            y = &quot;Dimension 2&quot;)  </code></pre>
-<p><img src="/post/cocktail-recipes/2020-06-09-cocktail-recipes-analysis-tidytuesday_files/figure-html/unnamed-chunk-14-1.png" width="2400" /></p>
+<p><img src="/post/2020-07-03-data-analysis-unsupervised-learning-on-cocktail-recipes_files/figure-html/unnamed-chunk-14-1.png" width="3300" /></p>
 <p>It looks like we do have some clusters here - do they correspond to the various categories of cocktail? In the next plot I have coloured each data point according to its category:</p>
 <pre class="r"><code>tt$name &lt;- cocktails_df$name
 
@@ -398,7 +398,7 @@ ggplot(data = tt, mapping = aes(x = V1, y = V2, colour = cocktails_df$category, 
           colour = &quot;Category&quot;,
            x = &quot;Dimension 1&quot;,
            y = &quot;Dimension 2&quot;)  </code></pre>
-<p><img src="/post/cocktail-recipes/2020-06-09-cocktail-recipes-analysis-tidytuesday_files/figure-html/unnamed-chunk-15-1.png" width="2400" /></p>
+<p><img src="/post/2020-07-03-data-analysis-unsupervised-learning-on-cocktail-recipes_files/figure-html/unnamed-chunk-15-1.png" width="3300" /></p>
 <p>This is another interesting plot. We see fairly distinct clusters of drinks for the whiskey, vodka, brandy, gin and rum-based cocktails, with a mixture in the middle around (0,0). Meanwhile the Cocktail Classics coloured in blue overlap with pretty much all the other categories, although not so much with the tequila-based drinks clustered in orange and the vodka-based drinks clustered in yellow. It turns out that only 7 of the Cocktail Classics contain tequila and only 12 contain vodka so clearly these are are considered less ‘classic’ ingredients for cocktails.</p>
 </div>
 <div id="conclusions" class="section level2">

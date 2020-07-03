@@ -1,10 +1,10 @@
 ---
-title: "Cocktail recipes - analysis & unsupervised learning"
+title: "Cocktail recipes analysis for #TidyTuesday"
 author: "James Gammerman"
 date: '2020-07-03'
 categories: R
-draft: yes
-featured: no
+draft: no
+featured: yes
 header:
   caption: 'Image credit: [**Youtube**](https://www.youtube.com/watch?v=c6GV_vRlIIA)'
   image: blog/cocktails/cocktails.jpg
@@ -12,25 +12,27 @@ image:
   caption: ''
   focal_point: ''
   preview_only: no
-lastmod: '2020-07-02T23:45:28+01:00'
+lastmod: '2020-07-03T15:30:04+01:00'
 projects: []
-slug: cocktail-recipes-analysis-tidytuesday
+slug: data-analysis-unsupervised-learning-on-cocktail-recipes
 subtitle: ''
 summary: ''
 tags:
-- rstats
-- unsupervised learning
 - tidytuesday
+- unsupervised learning
+- rstats
 authors: []
 ---
+
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(cache = FALSE, warning = FALSE, message = FALSE,
                       echo = TRUE, dpi = 300, cache.lazy = FALSE,
-                      tidy = "styler", fig.width = 8, fig.height = 5)
+                      styler = TRUE, fig.width = 11, fig.height = 6)
 library(tidyverse)
 library(scales)
 library(tidytext)
+library(rmarkdown)
 theme_set(theme_minimal())
 ```
 
@@ -133,6 +135,7 @@ num_ingreds
 ```
 
 So we now have `r num_ingreds` different ingredients in our dataset. Time for some exploratory analysis.
+
 
 ## Exploratory Data Analysis
 
@@ -335,7 +338,7 @@ tidied_pca %>%
 We can infer from this that PC1 mainly tells us about the contrast between gin/sugar/egg drinks one one side versus the rum/lime/syrup drinks on the other. PC2 is mostly about the gin/vermouth drinks (i.e. martinis) versus the sweet/eggy/lemony drinks. This tallies with our network analysis from earlier, where you can make out these little clusters in the graph if you look closely:
 
 
-![](/cocktail-recipes/2020-06-09-cocktail-recipes-analysis-tidytuesday_files/annotated_network.png)
+![](/post/2020-07-03-data-analysis-unsupervised-learning-on-cocktail-recipes_files/annotated_network.png)
 
 
 
@@ -387,3 +390,5 @@ This is another interesting plot. We see fairly distinct clusters of drinks for 
 * Gin, rum and whiskey are the most common spirits.
 * Cocktails are all about good combinations of ingredients: gin with vermouth; citrus with egg and sugar; rum with lime; whiskey with bitters...
 * Out of the spirits, tequila and vodka are considered the least "classic" as ingredients.
+
+
