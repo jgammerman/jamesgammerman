@@ -14,7 +14,7 @@ image:
   preview_only: no
 lastmod: '2020-07-03T15:30:04+01:00'
 projects: []
-slug: data-analysis-unsupervised-learning-on-cocktail-recipes
+slug: cocktail-recipes-analysis
 subtitle: ''
 summary: ''
 tags:
@@ -116,7 +116,7 @@ cocktails_parsed %>%
 num_ingreds <- cocktails_parsed %>% distinct(ingredient) %>% count()
 ```
 
-We now have `r num_ingreds` of them, which is still too many! Let's filter for ingredients that appear at least 15 times:
+We now have `r num_ingreds` of them, which is still too many. Let's filter for ingredients that appear at least 15 times:
 
 ```{r}
 cocktails_parsed_filtered <- cocktails_parsed %>%
@@ -353,7 +353,7 @@ We can infer from this that PC1 mainly tells us about the contrast between gin/s
 
 ## t-SNE
 
-Finally we come to t-SNE, a more modern technique for data dimensionality reduction and visualisation. Again I won't go into the details here, but they key thing to know is that unlike PCA, which focusses on representing variance in the original data, t-SNE tries to find a two-dimensional represenation of the data that preserves the distances between points as best as possible. That is, instances which are close together in the original (high dimensional) feature space are kept close together, while instances which are far apart in the original feature space are kept far apart. We can use it to get an idea of what clusters exist in the original feature space.
+Finally we come to t-SNE, a more modern technique for data dimensionality reduction and visualisation. Again I won't go into the details here, but the key thing to know is that unlike PCA, which focusses on representing variance in the original data, t-SNE tries to find a two-dimensional represenation of the data that preserves the distances between points as best as possible. That is, instances which are close together in the original (high dimensional) feature space are kept close together, while instances which are far apart in the original feature space are kept far apart. We can use it to get an idea of what clusters exist in the original feature space.
 
 Here we will apply t-SNE to a question that came up earlier - how much of an overlap is there between the Classic Cocktail category and the other ones? Below is the output of the t-SNE algorithm. Note that the x- and y-dimensions don't have any intuitive meaning here, we are just interested in how close the data are to each other and whether we can discern any clusters.
 
