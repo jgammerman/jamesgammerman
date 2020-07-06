@@ -1,5 +1,5 @@
 ---
-title: "Cocktail recipes analysis for #TidyTuesday"
+title: "Cocktail recipes analysis"
 author: "James Gammerman"
 date: '2020-07-03'
 categories: R
@@ -28,7 +28,7 @@ authors: []
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(cache = FALSE, warning = FALSE, message = FALSE,
                       echo = TRUE, dpi = 300, cache.lazy = FALSE,
-                      styler = TRUE, fig.width = 11, fig.height = 6)
+                      styler = TRUE)
 library(tidyverse)
 library(scales)
 library(tidytext)
@@ -38,9 +38,9 @@ theme_set(theme_minimal())
 
 ## Introduction
 
-For this first blog post I thought I'd take a recent [#TidyTuesday]("https://github.com/rfordatascience/tidytuesday") dataset and do some analysis of it. Where better to start than one of my favourite things? Cocktails! You can find the dataset and information about it [here]("https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-05-26/readme.md"). Basically it's a list of cocktail recipes from the most popular drink-mixing guide in America, called the "Mr Boston Offical Bartender's Guide", which first published in 1935. This is from the latest edition.
+For this first blog post I thought I'd take a recent [#TidyTuesday](https://github.com/rfordatascience/tidytuesday) dataset and do some analysis of it. Where better to start than one of my favourite things? Cocktails! You can find the dataset and information about it [here](https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-05-26/readme.md). Basically it's a list of cocktail recipes from the most popular drink-mixing guide in America, called the "Mr Boston Offical Bartender's Guide", which first published in 1935. This is from the latest edition.
 
-Firstly I'd like to acknowledge [Julia Silge]("https://juliasilge.com/blog/cocktail-recipes-umap/") and [David Robinson]("https://www.youtube.com/watch?v=EC0SVkFB2OU"), whose approaches to analysing this dataset I enjoyed. In this post I've taken some of their ideas and then developed them for my own purposes.
+Firstly I'd like to acknowledge [Julia Silge](https://juliasilge.com/blog/cocktail-recipes-umap/) and [David Robinson](https://www.youtube.com/watch?v=EC0SVkFB2OU), whose approaches to analysing this dataset I enjoyed. In this post I've taken some of their ideas and then developed them for my own purposes.
 
 I will first clean the data, do some exploratory analysis, then apply some unsupervised learning techniques to see what patterns we can find.
 
@@ -149,7 +149,9 @@ cocktails_parsed_filtered %>%
         ggplot(aes(n, ingredient)) +
         geom_col() +
         labs(title = "Top 20 most common ingredients in cocktail recipes",
-             x = "Count")
+             x = "Count") +
+        theme(axis.text = element_text(size = 13),
+              axis.title = element_text(size = 15))
 ```
 
 This looks much better. Unsurprisingly lemon juice is at the top, while the most common alcoholic ingredient is gin closely followed by rum. Bitters, whiskey and vodka are also very popular, which won't come as any surprise if you go to bars quite frequently ~~like I do~~.
@@ -173,7 +175,9 @@ cocktails_parsed_filtered %>%
         labs(title = "Most common ingredients broken down by drink category",
              x = "% of all recipes",
              y = "Ingredient",
-             fill = "Category")
+             fill = "Category") +
+        theme(axis.text = element_text(size = 13),
+              axis.title = element_text(size = 15))
 ```
 
 I think this break-down by category isn't particularly reliable - for example, most drinks containing gin aren't in the 'Gin' category. The 'Cocktail Classics' category seems to include plenty of drinks which could be placed in other categories. Perhaps a better way to organise this data would have been to allow multiple categories per drink?...We'll revisit this later.
@@ -211,7 +215,8 @@ ingredient_pairs %>%
         facet_wrap(~ item1, scales = "free_y") +
         scale_y_reordered() +
         labs(title = "Which ingredients are most correlated with selected ones?",
-             y = "Most correlated ingredients")
+             y = "Most correlated ingredients") +
+        theme(text = element_text(size= 12))
 ```
 
 These plots make sense: gin is often found with vermouth, which is how you make martinis and negronis; lemon juice is often found with sugar/syrup to balance out the acidity; while rum and lime juice is a classic combination as are vodka/cranberry juice and whiskey/bitters.
@@ -255,6 +260,9 @@ ingredient_info <- ingredients_summarized %>%
         distinct()
 
 # Generate network graph
+
+set.seed(3)
+
 top_cors %>%
         graph_from_data_frame(vertices = ingredient_info) %>%
         ggraph(layout = "fr") +
@@ -285,7 +293,7 @@ PCA is a classic unsupervised learning technique. I won't explain the details of
 
 > "When faced with a large set of correlated variables, PCA allows us to summarize this set with a smaller number of representative variables that collectively explain most
 of the variability in the original set...PCA also serves as a tool for data visualization."
-`r tufte::quote_footer('--- An Introduction to Statistical Learning, by James/Witten/Hastie/Tibshirani')`
+`r tufte::quote_footer('--- An Introduction to Statistical Learning, by James et al')`
 
 Essentially, PCA involves performing a linear mapping of the data to a lower-dimensional space such that it helps us understand where most of the variance came from in the original data. To illustrate this, see the following plot which shows the ingredients with the highest values (both positive and negative) in the first two principal components:
 
@@ -331,15 +339,16 @@ tidied_pca %>%
     x = "Absolute value of contribution",
     y = NULL, fill = "Positive?"
   ) +
-  guides(fill=FALSE)
+  guides(fill=FALSE) +
+  theme(axis.text = element_text(size = 13),
+        axis.title = element_text(size = 14))
 
 ```
 
 We can infer from this that PC1 mainly tells us about the contrast between gin/sugar/egg drinks one one side versus the rum/lime/syrup drinks on the other. PC2 is mostly about the gin/vermouth drinks (i.e. martinis) versus the sweet/eggy/lemony drinks. This tallies with our network analysis from earlier, where you can make out these little clusters in the graph if you look closely:
 
 
-![](/post/2020-07-03-data-analysis-unsupervised-learning-on-cocktail-recipes_files/annotated_network.png)
-
+![](/post/2020-07-03-data-analysis-unsupervised-learning-on-cocktail-recipes_files/annotated_network.jpg)
 
 
 ## t-SNE
@@ -388,7 +397,5 @@ This is another interesting plot. We see fairly distinct clusters of drinks for 
 
 * Lemon juice is by far the most common ingredient in cocktails.
 * Gin, rum and whiskey are the most common spirits.
-* Cocktails are all about good combinations of ingredients: gin with vermouth; citrus with egg and sugar; rum with lime; whiskey with bitters...
+* Cocktails are all about tried-and-tested combinations of ingredients: gin with vermouth; citrus with egg and sugar; rum with lime; whiskey with bitters...
 * Out of the spirits, tequila and vodka are considered the least "classic" as ingredients.
-
-
