@@ -1,0 +1,20 @@
+---
+title: Predicting and evaluating ML models with tidymodels
+author: ''
+date: '2021-02-17'
+slug: predicting-and-evaluating-ml-models-with-tidymodels
+categories: []
+tags: []
+subtitle: ''
+summary: ''
+authors: []
+lastmod: '2021-02-17T22:04:13Z'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+
+Work in progress
