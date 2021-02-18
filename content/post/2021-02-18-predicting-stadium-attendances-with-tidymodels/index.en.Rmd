@@ -18,6 +18,21 @@ projects: []
 draft: no
 ---
 
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache = FALSE, warning = FALSE, message = FALSE,
+                      echo = TRUE, dpi = 300, cache.lazy = FALSE,
+                      styler = TRUE)
+
+library(rmarkdown)
+```
+
 ## Introduction
 
 Work in progress
+
+```{r}
+data(mtcars)
+head(mtcars)
+```
+
