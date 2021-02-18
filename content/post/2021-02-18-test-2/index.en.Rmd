@@ -1,0 +1,24 @@
+---
+title: test-2
+author: JG
+date: '2021-02-18'
+slug: test-2
+categories: []
+tags: []
+subtitle: ''
+summary: ''
+authors: []
+lastmod: '2021-02-18T21:39:35Z'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+draft: FALSE
+featured: TRUE
+---
+
+## Work in progress 2
+
+This is another work in progress!
