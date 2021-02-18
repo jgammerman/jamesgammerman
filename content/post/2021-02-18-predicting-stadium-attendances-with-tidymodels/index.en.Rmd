@@ -1,0 +1,23 @@
+---
+title: Predicting stadium attendances with tidymodels (WIP)
+author: James
+date: '2021-02-18'
+slug: predicting-stadium-attendances-with-tidymodels
+categories: []
+tags: []
+subtitle: ''
+summary: ''
+authors: []
+lastmod: '2021-02-18T22:07:35Z'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+draft: no
+---
+
+## Introduction
+
+Work in progress
