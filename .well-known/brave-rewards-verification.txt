@@ -1,0 +1,4 @@
+This is a Brave Rewards publisher verification file.
+
+Domain: jamesgammerman.com
+Token: 0752a3e8d692687877bec129e63d312a2e7e0ccba7ddd5b8e805647d76053f2d

@@ -24,15 +24,16 @@ knitr::opts_chunk$set(cache = FALSE, warning = FALSE, message = FALSE,
                       echo = TRUE, dpi = 300, cache.lazy = FALSE,
                       styler = TRUE)
 
+library(tidyverse)
+library(scales)
 library(rmarkdown)
+theme_set(theme_minimal())
 ```
 
 ## Introduction
 
-Work in progress
+In this post I'm going to be trying out the new [tidymodels framework ](https://www.tidymodels.org/) in R.
 
-```{r}
-data(mtcars)
-head(mtcars)
-```
+WORK IN PROGRESS
+
 
