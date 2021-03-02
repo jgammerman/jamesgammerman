@@ -34,6 +34,48 @@ theme_set(theme_minimal())
 
 In this post I'm going to be trying out the new [tidymodels framework ](https://www.tidymodels.org/) in R.
 
-WORK IN PROGRESS
+I've been reading through the corresponding [book](https://www.tmwr.org/) and it looks to me like a real game-changer for building robust statistical/ML models quickly in the R language. But I've had enough of reading! Time to test it out.
+
+The data I'm going to be using is a [#TidyTuesday dataset](https://github.com/rfordatascience/tidytuesday) from last year related to crowd attendances in the American national football league (NFL). ~~I'll avoid making a little dig about how this isn't proper football in the British sense of the word because that would be churlish.~~ Credit to Julia Silge, whose code I've adapted and extended here.
+
+
+## Load and inspect the data
+
+```{r}
+attendance <- read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-02-04/attendance.csv")
+results <- read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-02-04/standings.csv")
+```
+
+
+Our first dataset is about attendance per team every week since the year 2000:
+
+```{r}
+head(attendance)
+```
+
+And our second dataset gives us results stats for each team about things like final standings, wins/losses, points for/against and whether the team made the playoffs for every year since 2000. 
+
+```{r}
+glimpse(results) # glimpse() rather than head() as there are many columns
+```
+
+Let's join these datasets by team and year to get one large dataset combining data on results and attendances which we can use for modelling.
+
+```{r}
+attendance_joined <- attendance %>%
+  left_join(results,
+    by = c("year", "team_name", "team")
+  )
+
+glimpse(attendance_joined)
+```
+
+
+## Data exploration
+
+
+
+
+
 
 
