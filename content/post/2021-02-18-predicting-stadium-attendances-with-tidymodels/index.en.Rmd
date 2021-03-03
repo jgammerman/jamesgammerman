@@ -1,5 +1,5 @@
 ---
-title: Predicting stadium attendances with tidymodels (WIP)
+title: Predicting NFL stadium attendances with tidymodels (WIP)
 author: James
 date: '2021-02-18'
 slug: predicting-stadium-attendances-with-tidymodels
@@ -27,7 +27,6 @@ knitr::opts_chunk$set(cache = FALSE, warning = FALSE, message = FALSE,
 library(tidyverse)
 library(scales)
 library(rmarkdown)
-theme_set(theme_minimal())
 ```
 
 ## Introduction
@@ -36,7 +35,11 @@ In this post I'm going to be trying out the new [tidymodels framework ](https://
 
 I've been reading through the corresponding [book](https://www.tmwr.org/) and it looks to me like a real game-changer for building robust statistical/ML models quickly in the R language. But I've had enough of reading! Time to test it out.
 
-The data I'm going to be using is a [#TidyTuesday dataset](https://github.com/rfordatascience/tidytuesday) from last year related to crowd attendances in the American national football league (NFL). ~~I'll avoid making a little dig about how this isn't proper football in the British sense of the word because that would be churlish.~~ Credit to Julia Silge, whose code I've adapted and extended here.
+The data I'm going to be using is a [#TidyTuesday dataset](https://github.com/rfordatascience/tidytuesday) from last year related to crowd attendances in the American national football league (NFL). ~~I'll avoid making a little dig about how this isn't proper football in the British sense of the word because that would be churlish.~~ 
+
+The tidymodels framework covers all stages of the modeling lifecyle, from data preprocessing and resampling to model tuning and evaluation. In this post I'm only going to look at *data resampling* and *model evaluation*. I'll look at the other stages in future posts.
+
+Credit to Julia Silge, whose [work](https://juliasilge.com/blog/intro-tidymodels/) served as the inspiration for this post.
 
 
 ## Load and inspect the data
@@ -70,10 +73,52 @@ attendance_joined <- attendance %>%
 glimpse(attendance_joined)
 ```
 
-
 ## Data exploration
 
-Work in progress
+It's always good practice to look at your data first to get a sense of it before trying any modelling. I like to do this using the `skim` function from R's `skimr` package:
+
+```{r}
+skimr::skim(attendance_joined)
+```
+
+This looks like a pretty kind dataset - In over 10,000 rows of data we have only 638 missing values (all being the `weekly_attendance` - our label to be predicted) and none of the features look particularly skewed. 
+
+Let's see how weekly attendance varied over the 20 years of data we have by utilising box and whisker plots. Has going to NFL mathes become much more popular?
+
+```{r}
+attendance_joined %>%
+  mutate(year = factor(year)) %>%
+  ggplot(aes(year, weekly_attendance, fill = year)) +
+  geom_boxplot(show.legend = FALSE, outlier.alpha = 0.5) +
+  labs(
+    x = "Year of NFL season",
+    y = "Weekly NFL game attendance"
+  )
+```
+
+Not much variation really. 2020's figures would presumably be much lower due to the pandemic but sadly we don't have them!
+
+Let's see how it varies by week - maybe attendances go down towards the end of the season as most teams have less to play for?
+
+```{r}
+attendance_joined %>%
+  mutate(week = factor(week)) %>%
+  ggplot(aes(week, weekly_attendance, fill = week)) +
+  geom_boxplot(show.legend = FALSE, outlier.alpha = 0.5) +
+  labs(
+    x = "Week of NFL season",
+    y = "Weekly NFL game attendance"
+  )
+```
+
+Again, very little variation. Not much to see here.
+
+In a more comprehensive analysis I would do some feature selection and engineering but that's not the purpose of this exercise - I just want to build a model to predict `weekly_attendance` based on all the predcitors I have.
+
+
+## Building models
+
+[Work in progress]
 
 
 
