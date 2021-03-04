@@ -446,7 +446,7 @@ glimpse(attendance_joined)</code></pre>
     x = &quot;Year of NFL season&quot;,
     y = &quot;Weekly NFL game attendance&quot;
   )</code></pre>
-<p><img src="{{< blogdown/postref >}}index.en_files/figure-html/unnamed-chunk-6-1.png" width="2100" /></p>
+<p><img src="staticunnamed-chunk-6-1.png" width="2100" /></p>
 <p>Not much variation really. 2020’s figures would presumably be much lower due to the pandemic but sadly we don’t have them!</p>
 <p>Let’s see how it varies by week - maybe attendances go down towards the end of the season as most teams have less to play for?</p>
 <pre class="r"><code>attendance_joined %&gt;%
@@ -457,7 +457,7 @@ glimpse(attendance_joined)</code></pre>
     x = &quot;Week of NFL season&quot;,
     y = &quot;Weekly NFL game attendance&quot;
   )</code></pre>
-<p><img src="{{< blogdown/postref >}}index.en_files/figure-html/unnamed-chunk-7-1.png" width="2100" /></p>
+<p><img src="staticunnamed-chunk-7-1.png" width="2100" /></p>
 <p>Again, very little variation. Not much to see here.</p>
 <p>In a more comprehensive analysis I would do some feature selection and engineering but that’s not the purpose of this exercise - I just want to build a model to predict <code>weekly_attendance</code> based on all the predcitors I have.</p>
 </div>

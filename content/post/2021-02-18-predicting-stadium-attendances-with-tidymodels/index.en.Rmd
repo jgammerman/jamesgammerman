@@ -22,11 +22,12 @@ draft: no
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(cache = FALSE, warning = FALSE, message = FALSE,
                       echo = TRUE, dpi = 300, cache.lazy = FALSE,
-                      styler = TRUE)
+                      styler = TRUE, fig.path = "static")
 
 library(tidyverse)
 library(scales)
 library(rmarkdown)
+theme_set(theme_minimal())
 ```
 
 ## Introduction
