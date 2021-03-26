@@ -1,0 +1,207 @@
+---
+title: Making a lollipop chart
+author: James Gammerman
+date: '2021-03-26'
+slug: making-a-lollipop-chart
+categories: []
+tags: []
+subtitle: ''
+summary: ''
+authors: []
+lastmod: '2021-03-26T19:55:36Z'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+
+<script src="{{< blogdown/postref >}}index.en_files/header-attrs/header-attrs.js"></script>
+
+
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>In this post I’m going to reproduce an unusual chart I saw David Robinson make during one of his recent Tidy Tuesday screencasts looking at data from the US Bureau of Labour Statistics (BLS).</p>
+<p>The point of this exercise is to a) force me to work through the steps that went in to making it, which improves my data science skills, and b) give me something to refer back to in future if I want to make something similar for another dataset.</p>
+<p>Some of his code used deprecated functions like <code>gather()</code> and <code>fct_lump()</code>, so I’ll also be adapting it slightly in order to improve my familiarity with the latest innovations in R.</p>
+<p>The chart’s called a “lollipop plot” and I think it does a really neat job of showing how the pandemic impacted US job numbers in 2020, broken down by industry and gender.</p>
+<p>Here’s the plot:</p>
+<p>It shows that the public administration sector was the only industry to win from the pandemic, while leisure and hopsitality lost heaviily; and that whether men or women lost more jobs was dependent on the industry.</p>
+<p>Let’s reproduce the plot in steps.</p>
+</div>
+<div id="load-libraries-and-data" class="section level1">
+<h1>Load libraries and data</h1>
+<p>First we load the relevant R packages and the dataset itself. In this case there were two datasets - one about employment figures and one about earnings, so we load just the employment data into an object called <code>employed</code>.</p>
+<pre class="r"><code>library(tidyverse)
+library(tidytuesdayR)
+library(scales)
+library(glue)
+theme_set(theme_light())
+
+tt &lt;- tt_load(&quot;2021-02-23&quot;)</code></pre>
+<pre><code>## 
+##  Downloading file 1 of 2: `earn.csv`
+##  Downloading file 2 of 2: `employed.csv`</code></pre>
+<pre class="r"><code>#load(&quot;tt.RData&quot;)
+employed &lt;- tt$employed</code></pre>
+</div>
+<div id="exploratory-data-analysis" class="section level1">
+<h1>Exploratory data analysis</h1>
+<p>Let’s take an initial look at the data:</p>
+<pre class="r"><code>head(employed)</code></pre>
+<pre><code>## # A tibble: 6 x 7
+##   industry major_occupation minor_occupation race_gender industry_total employ_n
+##   &lt;chr&gt;    &lt;chr&gt;            &lt;chr&gt;            &lt;chr&gt;                &lt;dbl&gt;    &lt;dbl&gt;
+## 1 Agricul… Management, pro… Management, bus… TOTAL              2349000   961000
+## 2 Agricul… Management, pro… Professional an… TOTAL              2349000    58000
+## 3 Agricul… Service occupat… Protective serv… TOTAL              2349000    13000
+## 4 Agricul… Service occupat… Service occupat… TOTAL              2349000    94000
+## 5 Agricul… Sales and offic… Sales and relat… TOTAL              2349000    12000
+## 6 Agricul… Sales and offic… Office and admi… TOTAL              2349000    96000
+## # … with 1 more variable: year &lt;dbl&gt;</code></pre>
+<p>So we have employment numbers broken down by:
+* Industry
+* Major occupation
+* Minor ocupation
+* Race/gender
+* Year.</p>
+<p>Further exploratory analysis (not shown) reveals that we have 25 different industries, 5 different major occupations, 12 minor occupations, and 6 values for race/gender. We also have 660 missing values in the employment number columns so we’ll need to deal with this.</p>
+<p>If we were doing a proper analysis/modelling project we’d need to do more thorough EDA here but this is enough for now.</p>
+</div>
+<div id="data-cleaning" class="section level1">
+<h1>Data cleaning</h1>
+<p>Let’s clean this data up a bit. Most importantly we need to:</p>
+<ol style="list-style-type: decimal">
+<li>Add another column which will make it easier for us to slice our data by race, gender or not at all. We’ll call this <code>dimension</code>.</li>
+<li>Remove any records with missing employment figures.</li>
+<li>Reduce the number of industries from 25 down to the biggest 10 and lump the remaining 15 into an “other” category</li>
+</ol>
+<ul>
+<li>For this we’ll use <code>fct_lump_n()</code> instead of <code>fct_lump()</code> which was used in the original code.</li>
+</ul>
+<pre class="r"><code>employed_cleaned &lt;- employed %&gt;%
+  mutate(
+    dimension = case_when(
+              race_gender == &quot;TOTAL&quot; ~ &quot;Total&quot;,
+              race_gender %in% c(&quot;Men&quot;, &quot;Women&quot;) ~ &quot;Gender&quot;,
+              TRUE ~ &quot;Race&quot;)) %&gt;% 
+  filter(!is.na(employ_n)) %&gt;%
+  mutate(industry = fct_lump_n(industry, n=10, w = employ_n), # note to self: same args as fct_lump() from original code
+         year = forcats::as_factor(year))
+
+head(employed_cleaned)</code></pre>
+<pre><code>## # A tibble: 6 x 8
+##   industry major_occupation minor_occupation race_gender industry_total employ_n
+##   &lt;fct&gt;    &lt;chr&gt;            &lt;chr&gt;            &lt;chr&gt;                &lt;dbl&gt;    &lt;dbl&gt;
+## 1 Other    Management, pro… Management, bus… TOTAL              2349000   961000
+## 2 Other    Management, pro… Professional an… TOTAL              2349000    58000
+## 3 Other    Service occupat… Protective serv… TOTAL              2349000    13000
+## 4 Other    Service occupat… Service occupat… TOTAL              2349000    94000
+## 5 Other    Sales and offic… Sales and relat… TOTAL              2349000    12000
+## 6 Other    Sales and offic… Office and admi… TOTAL              2349000    96000
+## # … with 2 more variables: year &lt;fct&gt;, dimension &lt;chr&gt;</code></pre>
+</div>
+<div id="visualisation" class="section level1">
+<h1>Visualisation</h1>
+<p>Now we can get to the visualising part. A good place to start would be using a bar chart to see how 2019 employment numbers compare to 2019. We can make it stacked to see a breakdown by industry.</p>
+<pre class="r"><code>employed_cleaned %&gt;%
+  filter(dimension == &quot;Total&quot;, year %in% c(2019, 2020)) %&gt;%
+  ggplot(aes(year, employ_n, fill = industry)) +
+  geom_col() +
+  scale_y_continuous(labels = comma) +
+  labs(y = &quot;# employed in industry&quot;,
+       x = &quot;Year&quot;) </code></pre>
+<p><img src="staticunnamed-chunk-1-1.png" width="2100" /></p>
+<p>This is a good start, we can see that around 10m jobs were lost overall, though it’s not easy to see which industries were worst hit. This is due to a psychologial effect called <a href="https://en.wikipedia.org/wiki/Weber%E2%80%93Fechner_law">Weber’s law</a>: humans are poor at measuring relative differences when there is no shared starting point.</p>
+</div>
+<div id="better-plot" class="section level1">
+<h1>Better plot</h1>
+<p>Let’s plot this in smarter way.</p>
+<p>Firstly, we’ll gather the <code>industry</code>/<code>major occupation</code>/<code>minor occupation</code> columns into one called <code>level</code> using <code>pivot_longer()</code>. Then we’ll summarise employment numbers by groups so we can slice by various groups of interest (e.g. a particular gender or occupation level):</p>
+<pre class="r"><code>comparison &lt;- employed_cleaned %&gt;%
+  filter(year %in% c(2019, 2020)) %&gt;%
+  mutate(major_occupation = paste(industry, major_occupation, sep = &quot; - &quot;),
+         minor_occupation = paste(major_occupation, minor_occupation, sep = &quot; - &quot;)) %&gt;%
+  # gather(level, occupation, industry, major_occupation, minor_occupation) %&gt;%    #    original code shown for comparison
+  pivot_longer(c(industry, major_occupation, minor_occupation), names_to = &quot;level&quot;, values_to = &quot;occupation&quot;) %&gt;% 
+  group_by(dimension, race_gender, level, occupation, year) %&gt;%
+  summarize(employ_n = sum(employ_n)) %&gt;%
+  ungroup() %&gt;%
+  arrange(year)</code></pre>
+<p>Our data now looks like this - note the columns now pivotted into one called <code>level</code>:</p>
+<pre class="r"><code>head(comparison)</code></pre>
+<pre><code>## # A tibble: 6 x 6
+##   dimension race_gender level    occupation                    year  employ_n
+##   &lt;chr&gt;     &lt;chr&gt;       &lt;chr&gt;    &lt;chr&gt;                         &lt;fct&gt;    &lt;dbl&gt;
+## 1 Gender    Men         industry Construction                  2019  10205000
+## 2 Gender    Men         industry Durable goods                 2019   7465000
+## 3 Gender    Men         industry Education and health services 2019   9052000
+## 4 Gender    Men         industry Financial activities          2019   5105000
+## 5 Gender    Men         industry Leisure and hospitality       2019   7145000
+## 6 Gender    Men         industry Manufacturing                 2019  11111000</code></pre>
+<p>Next, for each group we’ll engineer the employment figures to get a more informative metric: The percentage difference between 2020 and 2019.</p>
+<pre class="r"><code>comparison &lt;- comparison %&gt;%  
+  group_by(dimension, race_gender, level, occupation) %&gt;%
+  summarize(ratio = last(employ_n) / first(employ_n), # get ratio of 2020 number divided by 2019
+            change = ratio - 1,
+            employed_2019 = first(employ_n)) %&gt;%  # get 2019 number
+  group_by(dimension, level, occupation) %&gt;% # create a new group without the race_gender
+  mutate(total_2019 = sum(employed_2019)) %&gt;%  # gives us total for all race_genders
+  ungroup()</code></pre>
+<p>Our data now looks like this - note the new columns at the end:</p>
+<pre class="r"><code>head(comparison)</code></pre>
+<pre><code>## # A tibble: 6 x 8
+##   dimension race_gender level occupation ratio   change employed_2019 total_2019
+##   &lt;chr&gt;     &lt;chr&gt;       &lt;chr&gt; &lt;chr&gt;      &lt;dbl&gt;    &lt;dbl&gt;         &lt;dbl&gt;      &lt;dbl&gt;
+## 1 Gender    Men         indu… Construct… 0.942 -0.0580       10205000   11372000
+## 2 Gender    Men         indu… Durable g… 0.913 -0.0872        7465000    9970000
+## 3 Gender    Men         indu… Education… 0.958 -0.0421        9052000   35893000
+## 4 Gender    Men         indu… Financial… 1.00   0.00333       5105000   10765000
+## 5 Gender    Men         indu… Leisure a… 0.797 -0.203         7145000   14644000
+## 6 Gender    Men         indu… Manufactu… 0.923 -0.0770       11111000   15741000</code></pre>
+<p>Now we can make a better bar plot to summarise the impact of the pandemic, this time broken down by industry more explicitly:</p>
+<pre class="r"><code>comparison %&gt;%
+  filter(dimension == &quot;Total&quot;, level == &quot;industry&quot;) %&gt;%
+  mutate(occupation = fct_reorder(occupation, change)) %&gt;%
+  ggplot(aes(change, occupation)) +
+  geom_col() +
+  scale_x_continuous(labels = percent) +
+  labs(title = &quot;What industries suffered the most in 2020?&quot;,
+       x = &quot;Shift in # employed from 2019 to 2020 (BLS)&quot;,
+       y = &quot;&quot;)</code></pre>
+<p><img src="staticunnamed-chunk-6-1.png" width="2100" /></p>
+<p>This is definitely an improvement, but we can go one step further and introduce a new variable: gender.</p>
+</div>
+<div id="the-final-plot" class="section level1">
+<h1>The final plot</h1>
+<p>To build the lollipop plot we need to:</p>
+<ol style="list-style-type: decimal">
+<li>Use <code>ggplot2</code> to plot <code>change</code> on the x-axis and <code>occupation</code> on the y-axis, adding 2019 employment number as the size aesthetic and race_gender as the colour aesthetic. This means we are plotting 4 variables at once!</li>
+<li>Use <code>geom_point()</code> as our geom with the <code>position</code> argument to separate the points a bit for improved visibility.</li>
+<li>Use <code>geom_errorbarh()</code> to give us horizontal lines from the 0% starting point.</li>
+<li>Use <code>geom_vline()</code> to add a vertical dotted line at 0% to make it clearer what the starting point is.</li>
+<li>Make some aesthetic adjustments, like reversing the order of the legend so it makes sense, and adding 2019 employment figures to the y-axis labels for extra context.</li>
+</ol>
+<pre class="r"><code>  comparison %&gt;% 
+  filter(dimension == &quot;Gender&quot;, level == &quot;industry&quot;) %&gt;% 
+    mutate(occupation = glue(&quot;{ occupation } ({ comma(total_2019 / 1000) }K)&quot;),
+           occupation = fct_reorder(occupation, change)) %&gt;%
+    ggplot(aes(change, occupation)) +
+    geom_errorbarh(aes(xmin = 0, xmax = change, color = race_gender),
+                   height = 0,
+                   position = position_dodge(width = .7)) +
+    geom_point(aes(size = employed_2019, color = race_gender),
+               position = position_dodge(width = .7)) +
+    geom_vline(lty = 2, xintercept = 0) +
+    scale_x_continuous(labels = percent) +
+    scale_color_discrete(guide = guide_legend(reverse = TRUE)) +
+    scale_size_continuous(labels = comma, guide = FALSE) +
+    labs(x = &quot;Shift in # employed from 2019 to 2020 (BLS)&quot;,
+         y = &quot;&quot;,
+         color = &quot;&quot;,
+         size = &quot;# employed 2019&quot;)</code></pre>
+<p><img src="staticunnamed-chunk-7-1.png" width="2100" /></p>
+<p>And we have our final plot! Now we can see clearly that Leisure &amp; Hospitality was by far the biggest loser from the pandemic, with a loss of &gt;20% of jobs from the 2019 fiture of 14.6m.</p>
+<p>Job done :)</p>
+</div>
