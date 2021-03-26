@@ -1,26 +1,26 @@
 ---
-title: Predicting NFL stadium attendances with tidymodels (WIP)
-author: James
+title: "Predicting NFL stadium attendances with tidymodels"
+author: "James"
 date: '2021-02-18'
-slug: predicting-stadium-attendances-with-tidymodels
 categories: []
-tags: []
-subtitle: ''
-summary: ''
-authors: []
-lastmod: '2021-02-18T22:07:35Z'
+draft: no
 featured: no
 image:
   caption: ''
   focal_point: ''
   preview_only: no
+lastmod: '2021-02-18T22:07:35Z'
 projects: []
-draft: no
+slug: predicting-stadium-attendances-with-tidymodels
+subtitle: ''
+summary: ''
+tags: []
+authors: []
 ---
 
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(cache = FALSE, warning = FALSE, message = FALSE,
+knitr::opts_chunk$set(cache = TRUE, warning = FALSE, message = FALSE,
                       echo = TRUE, dpi = 300, cache.lazy = FALSE,
                       styler = TRUE, fig.path = "static")
 
@@ -28,20 +28,20 @@ library(tidyverse)
 library(scales)
 library(rmarkdown)
 theme_set(theme_minimal())
+options(digits=2)
 ```
 
 ## Introduction
 
 In this post I'm going to be trying out the new [tidymodels framework ](https://www.tidymodels.org/) in R.
 
-I've been reading through the corresponding [book](https://www.tmwr.org/) and it looks to me like a real game-changer for building robust statistical/ML models quickly in the R language. But I've had enough of reading! Time to test it out.
+I've been reading through the corresponding [book](https://www.tmwr.org/) and it looks to me like a real game-changer for building robust statistical/ML models quickly in the R language. But reading only gets you so far! Time to test it out.
 
-The data I'm going to be using is a [#TidyTuesday dataset](https://github.com/rfordatascience/tidytuesday) from last year related to crowd attendances in the American national football league (NFL). ~~I'll avoid making a little dig about how this isn't proper football in the British sense of the word because that would be churlish.~~ 
+The data I'm going to be using is a [#TidyTuesday dataset](https://github.com/rfordatascience/tidytuesday) from last year related to crowd attendances in the American national football league (NFL). 
 
-The tidymodels framework covers all stages of the modeling lifecyle, from data preprocessing and resampling to model tuning and evaluation. In this post I'm only going to look at *data resampling* and *model evaluation*. I'll look at the other stages in future posts.
+The tidymodels framework covers all stages of the modeling lifecyle, from data preprocessing and resampling to model building, tuning and evaluation. In this post I'm only going to look at *data resampling* and *model building* and  *evaluation*. I'll look at the other stages in future posts.
 
-Credit to Julia Silge, whose [work](https://juliasilge.com/blog/intro-tidymodels/) served as the inspiration for this post.
-
+I owe credit to Julia Silge, whose [blog post](https://juliasilge.com/blog/intro-tidymodels/) served as the inspiration for this piece.
 
 ## Load and inspect the data
 
@@ -60,7 +60,7 @@ head(attendance)
 And our second dataset gives us results stats for each team about things like final standings, wins/losses, points for/against and whether the team made the playoffs for every year since 2000. 
 
 ```{r}
-glimpse(results) # glimpse() rather than head() as there are many columns
+head(results) 
 ```
 
 Let's join these datasets by team and year to get one large dataset combining data on results and attendances which we can use for modelling.
@@ -71,20 +71,20 @@ attendance_joined <- attendance %>%
     by = c("year", "team_name", "team")
   )
 
-glimpse(attendance_joined)
+head(attendance_joined)
 ```
 
 ## Data exploration
 
-It's always good practice to look at your data first to get a sense of it before trying any modelling. I like to do this using the `skim` function from R's `skimr` package:
+As usual, we need to look at our data first to get a sense of it before starting any modelling. I like to do this using the `skim` function from R's `skimr` package, which gives us an overview of the data:
 
 ```{r}
 skimr::skim(attendance_joined)
 ```
 
-This looks like a pretty kind dataset - In over 10,000 rows of data we have only 638 missing values (all being the `weekly_attendance` - our label to be predicted) and none of the features look particularly skewed. 
+This looks like a pretty kind dataset, the only obvious problem being the 638 missing values which we will need to deal with. None of the features look particularly skewed (scroll to the right on the table above to see this). 
 
-Let's see how weekly attendance varied over the 20 years of data we have by utilising box and whisker plots. Has going to NFL mathes become much more popular?
+Let's see how weekly attendance varied over the 20 years of data we have by utilising box and whisker plots. Has going to NFL matches become more popular in recent years?
 
 ```{r}
 attendance_joined %>%
@@ -94,33 +94,244 @@ attendance_joined %>%
   labs(
     x = "Year of NFL season",
     y = "Weekly NFL game attendance"
-  )
+  ) +
+  scale_y_continuous(labels = comma)
 ```
 
-Not much variation really. 2020's figures would presumably be much lower due to the pandemic but sadly we don't have them!
+Not much variation really. The 2020 figures would be interesting - presumably be much lower due to the pandemic - but we don't have them unfortunately.
 
-Let's see how it varies by week - maybe attendances go down towards the end of the season as most teams have less to play for?
+I wonder if teams that got to the playoffs had a higher weekly attendance? Let's use a histogram to check out the respective distributions.
 
 ```{r}
 attendance_joined %>%
-  mutate(week = factor(week)) %>%
-  ggplot(aes(week, weekly_attendance, fill = week)) +
-  geom_boxplot(show.legend = FALSE, outlier.alpha = 0.5) +
+  filter(!is.na(weekly_attendance)) %>% 
+  group_by(team_name, year, margin_of_victory, playoffs) %>% 
+  summarise(avg_weekly_attendance = as.integer(mean(weekly_attendance))) %>% 
+  ggplot(aes(avg_weekly_attendance, fill = playoffs)) +
+  geom_histogram(position = "identity", alpha = 0.4) +
   labs(
-    x = "Week of NFL season",
-    y = "Weekly NFL game attendance"
+    x = "Average weekly attendance",
+    y = "Number of teams",
+    fill = NULL
   )
 ```
 
-Again, very little variation. Not much to see here.
+It looks like the Playoffs distribution is slightly to the right of the No Playoffs. Let's see if we can view this difference more explicitly, using a boxplot.
 
-In a more comprehensive analysis I would do some feature selection and engineering but that's not the purpose of this exercise - I just want to build a model to predict `weekly_attendance` based on all the predcitors I have.
+```{r}
+attendance_joined %>%
+  filter(!is.na(weekly_attendance)) %>% 
+  group_by(team_name, year, margin_of_victory, playoffs) %>% 
+  summarise(avg_weekly_attendance = as.integer(mean(weekly_attendance)))  %>% 
+  ggplot(aes(playoffs, avg_weekly_attendance, fill = playoffs)) +
+  geom_boxplot() +
+  labs(
+    x = "Playoff reached",
+    y = "Average weekly attendance"
+  )
+```
 
+The lower quartile and median are definitely higher for the teams that made it to the Playoffs. We'll need to take this into account later when we modelling. 
+
+In a more comprehensive analysis I would do further EDA and then systematic feature selection, but that's not the purpose of this exercise - I just want to practise building a model to predict `weekly_attendance` using several features of my choosing. 
+
+Let's prepare the data for modelling by removing any rows without a weekly attendance and keeping only columns that I think may be predictors for attendance:
+
+```{r}
+attendance_df <- attendance_joined %>%
+  filter(!is.na(weekly_attendance)) %>%
+  select(
+    weekly_attendance, team_name, year, week,
+    margin_of_victory, strength_of_schedule, playoffs
+  )
+
+head(attendance_df)
+```
 
 ## Building models
 
-[Work in progress]
+### Splitting the data
 
+Now we can start using some `tidymodels` packages!
+
+First up we need to split our data - we do this using the `initial_split()` function from the `rsample` package. We'll use the default setting of a 75:25 split for training:test set size. Note that in a real-life ML project we would use resampling to build multiple training and test sets for evaluating model performance - this will be discussed later. For now a simpler approach will suffice.
+
+Note that as per our EDA above, we need to stratify this to ensure that each set has roughly the same number of teams that went on to the playoffs - we do this using the `strata` argument.
+
+```{r}
+library(tidymodels)
+
+set.seed(1234)
+attendance_split <- attendance_df %>%
+  initial_split(strata = playoffs)
+
+nfl_train <- training(attendance_split)
+nfl_test <- testing(attendance_split)
+```
+
+Now we've got our datasets, we can move on to the modelling itself.
+
+### Specifying and fitting models
+
+For this exercise we will compare two models - a linear model and a random forest. To do this we will use functions from the `parsnip` package.
+
+1) Linear model
+
+First let's specify the model:
+
+```{r}
+lm_spec <- linear_reg() %>% 
+  set_engine(engine = "lm")
+
+lm_spec
+```
+
+Next we fit the model on the training data:
+
+```{r}
+lm_fit <- lm_spec %>% 
+  fit(weekly_attendance ~ .,
+      data = nfl_train)
+
+lm_fit
+```
+
+This model is now ready to use. Now we can move on to the second model.
+
+2) Random forest
+
+Specify the model:
+
+```{r}
+rf_spec <- rand_forest(mode = "regression") %>%
+  set_engine("ranger")
+
+rf_spec
+```
+
+Fit the model:
+
+```{r}
+rf_fit <- rf_spec %>%
+  fit(weekly_attendance ~ .,
+    data = nfl_train
+  )
+
+rf_fit
+```
+
+## Evaluating the models
+
+Now we need to measure how effective our models were and compare them. One way to do this is to `predict()` the weekly attendance for the test set.
+
+```{r}
+results_test <- lm_fit %>%
+  predict(new_data = nfl_test) %>%
+  mutate(
+    truth = nfl_test$weekly_attendance,
+    model = "lm"
+  ) %>%
+  bind_rows(rf_fit %>%
+    predict(new_data = nfl_test) %>%
+    mutate(
+      truth = nfl_test$weekly_attendance,
+      model = "rf"
+    ))
+```
+
+This gives us a tibble with the predictions and true values for both models
+
+```{r}
+results_test %>% slice(c(1:5, (n() -5):n()))
+```
+
+Let's visualise the predictions versus the truth for both models:
+
+```{r}
+results_test %>%
+  ggplot(aes(x = truth, y = .pred, color = model)) +
+  geom_abline(lty = 2) +
+  geom_point(alpha = 0.5) +
+  scale_x_continuous(labels = scales::comma) +
+  scale_y_continuous(labels = scales::comma) +
+  facet_wrap(~model) +
+  labs(y = "Predicted weekly attendance", x = "Actual weekly attendance") +
+  coord_obs_pred() +  # scale and size the x- and y-axis uniformly
+  theme(panel.spacing = unit(2, "lines"))  # widen the gap between plots for aesthetic purposes
+```
+
+It looks like neither model does a particularly good job of predicting the attendance, though it's hard to see which is better. Let's try to establish this numerically rather than visually. The `yardstick` package contains a `metric_set` function, from which we can compute any metrics of interest for both models. 
+
+As discussed [here](https://www.tmwr.org/performance.html) in the tidymodels textbook, the choice of which metric to examine can be critical. Accuracy, as measured by the RMSE, and correlation, as measured by the R^2^, are not the same thing, and in proper ML projects the choice of which to optimise should be made on a case-by-case basis. For now, we will simply evaluate both.
+
+```{r}
+nfl_metrics <- metric_set(rmse, rsq)
+
+results_test %>% 
+  group_by(model) %>% 
+  nfl_metrics(truth = truth, estimate = .pred) %>% 
+  select(model, .metric, .estimate)
+```
+
+The linear model produced a lower error and higher r-squared score, showing that for this particular dataset it's the better model. Its average error in predicting weekly attendance is ~8350 people, which isn't too bad given how basic it is!
+
+Presumably the random forest model, being much more complex than the linear one, overfit to the training data, which is why it did a worse job on the test set (further analysis showed this to indeed be the case - code not shown).
+
+## Resampling the data
+
+As touched on earlier, in a real-lfie ML project, we would not simply train models on the training set and then immediately apply them to the test set. The test set should not be touched until validation for model selection has been completed. Instead, we need to take a *resampling* approach using *cross-validation*.
+
+Below, we use the `vfold_cv()` function from the `rsample` package to achieve this and then re-compute our metrics of interest for both models.
+
+Linear model:
+
+```{r}
+set.seed(1234)
+nfl_folds <- vfold_cv(nfl_train, strata = playoffs)
+
+lm_res <- fit_resamples(
+  lm_spec,
+  weekly_attendance ~ .,
+  nfl_folds,
+  control = control_resamples(save_pred = TRUE)
+)
+
+lm_res %>%
+  collect_metrics() %>% 
+  select(.metric, mean)
+```
+
+Random forest model:
+
+```{r}
+set.seed(1234)
+nfl_folds <- vfold_cv(nfl_train, strata = playoffs)
+
+rf_res <- fit_resamples(
+  rf_spec,
+  weekly_attendance ~ .,
+  nfl_folds,
+  control = control_resamples(save_pred = TRUE)
+)
+
+rf_res %>%
+  collect_metrics() %>% 
+  select(.metric, mean)
+```
+
+So now using **only** the training set we have got metric estimates very close to the ones we computed from the test set earlier. Using cross-validation in this way allows us to be more economical with our data spending, as well as making it possible to tune the models without the risk of any data leakage from the test set.
+
+## Conclusions
+
+In this post we:
+
+1. Loaded and explored the data, which allowed us to make more informed choices about how to later model it.
+2. Gained familiarity with the `tidymodels` framework of packages, such as:
++ Using `rsample` for data splitting
++ Using `parsnip` for model specifying and fitting.
++ Using `yardstick` for model evaluation
++ Using `rsample` again, this time for doing cross-validation. 
+3. Established that, for this particular dataset, the linear model did a better job of predicting on new data than the random forest, which overfit to the training set. 
 
 
 

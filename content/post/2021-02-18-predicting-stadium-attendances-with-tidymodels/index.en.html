@@ -1,21 +1,21 @@
 ---
-title: Predicting NFL stadium attendances with tidymodels (WIP)
-author: James
+title: "Predicting NFL stadium attendances with tidymodels"
+author: "James"
 date: '2021-02-18'
-slug: predicting-stadium-attendances-with-tidymodels
 categories: []
-tags: []
-subtitle: ''
-summary: ''
-authors: []
-lastmod: '2021-02-18T22:07:35Z'
+draft: no
 featured: no
 image:
   caption: ''
   focal_point: ''
   preview_only: no
+lastmod: '2021-02-18T22:07:35Z'
 projects: []
-draft: no
+slug: predicting-stadium-attendances-with-tidymodels
+subtitle: ''
+summary: ''
+tags: []
+authors: []
 ---
 
 <script src="{{< blogdown/postref >}}index.en_files/header-attrs/header-attrs.js"></script>
@@ -24,10 +24,10 @@ draft: no
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
 <p>In this post I’m going to be trying out the new <a href="https://www.tidymodels.org/">tidymodels framework</a> in R.</p>
-<p>I’ve been reading through the corresponding <a href="https://www.tmwr.org/">book</a> and it looks to me like a real game-changer for building robust statistical/ML models quickly in the R language. But I’ve had enough of reading! Time to test it out.</p>
-<p>The data I’m going to be using is a <a href="https://github.com/rfordatascience/tidytuesday">#TidyTuesday dataset</a> from last year related to crowd attendances in the American national football league (NFL). <del>I’ll avoid making a little dig about how this isn’t proper football in the British sense of the word because that would be churlish.</del></p>
-<p>The tidymodels framework covers all stages of the modeling lifecyle, from data preprocessing and resampling to model tuning and evaluation. In this post I’m only going to look at <em>data resampling</em> and <em>model evaluation</em>. I’ll look at the other stages in future posts.</p>
-<p>Credit to Julia Silge, whose <a href="https://juliasilge.com/blog/intro-tidymodels/">work</a> served as the inspiration for this post.</p>
+<p>I’ve been reading through the corresponding <a href="https://www.tmwr.org/">book</a> and it looks to me like a real game-changer for building robust statistical/ML models quickly in the R language. But reading only gets you so far! Time to test it out.</p>
+<p>The data I’m going to be using is a <a href="https://github.com/rfordatascience/tidytuesday">#TidyTuesday dataset</a> from last year related to crowd attendances in the American national football league (NFL).</p>
+<p>The tidymodels framework covers all stages of the modeling lifecyle, from data preprocessing and resampling to model building, tuning and evaluation. In this post I’m only going to look at <em>data resampling</em> and <em>model building</em> and <em>evaluation</em>. I’ll look at the other stages in future posts.</p>
+<p>I owe credit to Julia Silge, whose <a href="https://juliasilge.com/blog/intro-tidymodels/">blog post</a> served as the inspiration for this piece.</p>
 </div>
 <div id="load-and-inspect-the-data" class="section level2">
 <h2>Load and inspect the data</h2>
@@ -45,57 +45,43 @@ results &lt;- read_csv(&quot;https://raw.githubusercontent.com/rfordatascience/t
 ## 5 Arizona Cardinals  2000 893926 387475 506451     5             66985
 ## 6 Arizona Cardinals  2000 893926 387475 506451     6             44296</code></pre>
 <p>And our second dataset gives us results stats for each team about things like final standings, wins/losses, points for/against and whether the team made the playoffs for every year since 2000.</p>
-<pre class="r"><code>glimpse(results) # glimpse() rather than head() as there are many columns</code></pre>
-<pre><code>## Rows: 638
-## Columns: 15
-## $ team                 &lt;chr&gt; &quot;Miami&quot;, &quot;Indianapolis&quot;, &quot;New York&quot;, &quot;Buffalo&quot;, …
-## $ team_name            &lt;chr&gt; &quot;Dolphins&quot;, &quot;Colts&quot;, &quot;Jets&quot;, &quot;Bills&quot;, &quot;Patriots&quot;…
-## $ year                 &lt;dbl&gt; 2000, 2000, 2000, 2000, 2000, 2000, 2000, 2000, …
-## $ wins                 &lt;dbl&gt; 11, 10, 9, 8, 5, 13, 12, 9, 7, 4, 3, 12, 11, 7, …
-## $ loss                 &lt;dbl&gt; 5, 6, 7, 8, 11, 3, 4, 7, 9, 12, 13, 4, 5, 9, 10,…
-## $ points_for           &lt;dbl&gt; 323, 429, 321, 315, 276, 346, 333, 321, 367, 185…
-## $ points_against       &lt;dbl&gt; 226, 326, 321, 350, 338, 191, 165, 255, 327, 359…
-## $ points_differential  &lt;dbl&gt; 97, 103, 0, -35, -62, 155, 168, 66, 40, -174, -2…
-## $ margin_of_victory    &lt;dbl&gt; 6.1, 6.4, 0.0, -2.2, -3.9, 9.7, 10.5, 4.1, 2.5, …
-## $ strength_of_schedule &lt;dbl&gt; 1.0, 1.5, 3.5, 2.2, 1.4, -1.3, -2.5, -0.2, -1.4,…
-## $ simple_rating        &lt;dbl&gt; 7.1, 7.9, 3.5, 0.0, -2.5, 8.3, 8.0, 3.9, 1.1, -1…
-## $ offensive_ranking    &lt;dbl&gt; 0.0, 7.1, 1.4, 0.5, -2.7, 1.5, 0.0, 0.6, 3.2, -8…
-## $ defensive_ranking    &lt;dbl&gt; 7.1, 0.8, 2.2, -0.5, 0.2, 6.8, 8.0, 3.3, -2.1, -…
-## $ playoffs             &lt;chr&gt; &quot;Playoffs&quot;, &quot;Playoffs&quot;, &quot;No Playoffs&quot;, &quot;No Playo…
-## $ sb_winner            &lt;chr&gt; &quot;No Superbowl&quot;, &quot;No Superbowl&quot;, &quot;No Superbowl&quot;, …</code></pre>
+<pre class="r"><code>head(results) </code></pre>
+<pre><code>## # A tibble: 6 x 15
+##   team    team_name  year  wins  loss points_for points_against points_differen…
+##   &lt;chr&gt;   &lt;chr&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;      &lt;dbl&gt;          &lt;dbl&gt;            &lt;dbl&gt;
+## 1 Miami   Dolphins   2000    11     5        323            226               97
+## 2 Indian… Colts      2000    10     6        429            326              103
+## 3 New Yo… Jets       2000     9     7        321            321                0
+## 4 Buffalo Bills      2000     8     8        315            350              -35
+## 5 New En… Patriots   2000     5    11        276            338              -62
+## 6 Tennes… Titans     2000    13     3        346            191              155
+## # … with 7 more variables: margin_of_victory &lt;dbl&gt;, strength_of_schedule &lt;dbl&gt;,
+## #   simple_rating &lt;dbl&gt;, offensive_ranking &lt;dbl&gt;, defensive_ranking &lt;dbl&gt;,
+## #   playoffs &lt;chr&gt;, sb_winner &lt;chr&gt;</code></pre>
 <p>Let’s join these datasets by team and year to get one large dataset combining data on results and attendances which we can use for modelling.</p>
 <pre class="r"><code>attendance_joined &lt;- attendance %&gt;%
   left_join(results,
     by = c(&quot;year&quot;, &quot;team_name&quot;, &quot;team&quot;)
   )
 
-glimpse(attendance_joined)</code></pre>
-<pre><code>## Rows: 10,846
-## Columns: 20
-## $ team                 &lt;chr&gt; &quot;Arizona&quot;, &quot;Arizona&quot;, &quot;Arizona&quot;, &quot;Arizona&quot;, &quot;Ari…
-## $ team_name            &lt;chr&gt; &quot;Cardinals&quot;, &quot;Cardinals&quot;, &quot;Cardinals&quot;, &quot;Cardinal…
-## $ year                 &lt;dbl&gt; 2000, 2000, 2000, 2000, 2000, 2000, 2000, 2000, …
-## $ total                &lt;dbl&gt; 893926, 893926, 893926, 893926, 893926, 893926, …
-## $ home                 &lt;dbl&gt; 387475, 387475, 387475, 387475, 387475, 387475, …
-## $ away                 &lt;dbl&gt; 506451, 506451, 506451, 506451, 506451, 506451, …
-## $ week                 &lt;dbl&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 1…
-## $ weekly_attendance    &lt;dbl&gt; 77434, 66009, NA, 71801, 66985, 44296, 38293, 62…
-## $ wins                 &lt;dbl&gt; 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, …
-## $ loss                 &lt;dbl&gt; 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, …
-## $ points_for           &lt;dbl&gt; 210, 210, 210, 210, 210, 210, 210, 210, 210, 210…
-## $ points_against       &lt;dbl&gt; 443, 443, 443, 443, 443, 443, 443, 443, 443, 443…
-## $ points_differential  &lt;dbl&gt; -233, -233, -233, -233, -233, -233, -233, -233, …
-## $ margin_of_victory    &lt;dbl&gt; -14.6, -14.6, -14.6, -14.6, -14.6, -14.6, -14.6,…
-## $ strength_of_schedule &lt;dbl&gt; -0.7, -0.7, -0.7, -0.7, -0.7, -0.7, -0.7, -0.7, …
-## $ simple_rating        &lt;dbl&gt; -15.2, -15.2, -15.2, -15.2, -15.2, -15.2, -15.2,…
-## $ offensive_ranking    &lt;dbl&gt; -7.2, -7.2, -7.2, -7.2, -7.2, -7.2, -7.2, -7.2, …
-## $ defensive_ranking    &lt;dbl&gt; -8.1, -8.1, -8.1, -8.1, -8.1, -8.1, -8.1, -8.1, …
-## $ playoffs             &lt;chr&gt; &quot;No Playoffs&quot;, &quot;No Playoffs&quot;, &quot;No Playoffs&quot;, &quot;No…
-## $ sb_winner            &lt;chr&gt; &quot;No Superbowl&quot;, &quot;No Superbowl&quot;, &quot;No Superbowl&quot;, …</code></pre>
+head(attendance_joined)</code></pre>
+<pre><code>## # A tibble: 6 x 20
+##   team   team_name  year  total   home   away  week weekly_attendan…  wins  loss
+##   &lt;chr&gt;  &lt;chr&gt;     &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;            &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1 Arizo… Cardinals  2000 893926 387475 506451     1            77434     3    13
+## 2 Arizo… Cardinals  2000 893926 387475 506451     2            66009     3    13
+## 3 Arizo… Cardinals  2000 893926 387475 506451     3               NA     3    13
+## 4 Arizo… Cardinals  2000 893926 387475 506451     4            71801     3    13
+## 5 Arizo… Cardinals  2000 893926 387475 506451     5            66985     3    13
+## 6 Arizo… Cardinals  2000 893926 387475 506451     6            44296     3    13
+## # … with 10 more variables: points_for &lt;dbl&gt;, points_against &lt;dbl&gt;,
+## #   points_differential &lt;dbl&gt;, margin_of_victory &lt;dbl&gt;,
+## #   strength_of_schedule &lt;dbl&gt;, simple_rating &lt;dbl&gt;, offensive_ranking &lt;dbl&gt;,
+## #   defensive_ranking &lt;dbl&gt;, playoffs &lt;chr&gt;, sb_winner &lt;chr&gt;</code></pre>
 </div>
 <div id="data-exploration" class="section level2">
 <h2>Data exploration</h2>
-<p>It’s always good practice to look at your data first to get a sense of it before trying any modelling. I like to do this using the <code>skim</code> function from R’s <code>skimr</code> package:</p>
+<p>As usual, we need to look at our data first to get a sense of it before starting any modelling. I like to do this using the <code>skim</code> function from R’s <code>skimr</code> package, which gives us an overview of the data:</p>
 <pre class="r"><code>skimr::skim(attendance_joined)</code></pre>
 <table>
 <caption><span id="tab:unnamed-chunk-5">Table 1: </span>Data summary</caption>
@@ -436,8 +422,8 @@ glimpse(attendance_joined)</code></pre>
 </tr>
 </tbody>
 </table>
-<p>This looks like a pretty kind dataset - In over 10,000 rows of data we have only 638 missing values (all being the <code>weekly_attendance</code> - our label to be predicted) and none of the features look particularly skewed.</p>
-<p>Let’s see how weekly attendance varied over the 20 years of data we have by utilising box and whisker plots. Has going to NFL mathes become much more popular?</p>
+<p>This looks like a pretty kind dataset, the only obvious problem being the 638 missing values which we will need to deal with. None of the features look particularly skewed (scroll to the right on the table above to see this).</p>
+<p>Let’s see how weekly attendance varied over the 20 years of data we have by utilising box and whisker plots. Has going to NFL matches become more popular in recent years?</p>
 <pre class="r"><code>attendance_joined %&gt;%
   mutate(year = factor(year)) %&gt;%
   ggplot(aes(year, weekly_attendance, fill = year)) +
@@ -445,23 +431,286 @@ glimpse(attendance_joined)</code></pre>
   labs(
     x = &quot;Year of NFL season&quot;,
     y = &quot;Weekly NFL game attendance&quot;
-  )</code></pre>
+  ) +
+  scale_y_continuous(labels = comma)</code></pre>
 <p><img src="staticunnamed-chunk-6-1.png" width="2100" /></p>
-<p>Not much variation really. 2020’s figures would presumably be much lower due to the pandemic but sadly we don’t have them!</p>
-<p>Let’s see how it varies by week - maybe attendances go down towards the end of the season as most teams have less to play for?</p>
+<p>Not much variation really. The 2020 figures would be interesting - presumably be much lower due to the pandemic - but we don’t have them unfortunately.</p>
+<p>I wonder if teams that got to the playoffs had a higher weekly attendance? Let’s use a histogram to check out the respective distributions.</p>
 <pre class="r"><code>attendance_joined %&gt;%
-  mutate(week = factor(week)) %&gt;%
-  ggplot(aes(week, weekly_attendance, fill = week)) +
-  geom_boxplot(show.legend = FALSE, outlier.alpha = 0.5) +
+  filter(!is.na(weekly_attendance)) %&gt;% 
+  group_by(team_name, year, margin_of_victory, playoffs) %&gt;% 
+  summarise(avg_weekly_attendance = as.integer(mean(weekly_attendance))) %&gt;% 
+  ggplot(aes(avg_weekly_attendance, fill = playoffs)) +
+  geom_histogram(position = &quot;identity&quot;, alpha = 0.4) +
   labs(
-    x = &quot;Week of NFL season&quot;,
-    y = &quot;Weekly NFL game attendance&quot;
+    x = &quot;Average weekly attendance&quot;,
+    y = &quot;Number of teams&quot;,
+    fill = NULL
   )</code></pre>
 <p><img src="staticunnamed-chunk-7-1.png" width="2100" /></p>
-<p>Again, very little variation. Not much to see here.</p>
-<p>In a more comprehensive analysis I would do some feature selection and engineering but that’s not the purpose of this exercise - I just want to build a model to predict <code>weekly_attendance</code> based on all the predcitors I have.</p>
+<p>It looks like the Playoffs distribution is slightly to the right of the No Playoffs. Let’s see if we can view this difference more explicitly, using a boxplot.</p>
+<pre class="r"><code>attendance_joined %&gt;%
+  filter(!is.na(weekly_attendance)) %&gt;% 
+  group_by(team_name, year, margin_of_victory, playoffs) %&gt;% 
+  summarise(avg_weekly_attendance = as.integer(mean(weekly_attendance)))  %&gt;% 
+  ggplot(aes(playoffs, avg_weekly_attendance, fill = playoffs)) +
+  geom_boxplot() +
+  labs(
+    x = &quot;Playoff reached&quot;,
+    y = &quot;Average weekly attendance&quot;
+  )</code></pre>
+<p><img src="staticunnamed-chunk-8-1.png" width="2100" /></p>
+<p>The lower quartile and median are definitely higher for the teams that made it to the Playoffs. We’ll need to take this into account later when we modelling.</p>
+<p>In a more comprehensive analysis I would do further EDA and then systematic feature selection, but that’s not the purpose of this exercise - I just want to practise building a model to predict <code>weekly_attendance</code> using several features of my choosing.</p>
+<p>Let’s prepare the data for modelling by removing any rows without a weekly attendance and keeping only columns that I think may be predictors for attendance:</p>
+<pre class="r"><code>attendance_df &lt;- attendance_joined %&gt;%
+  filter(!is.na(weekly_attendance)) %&gt;%
+  select(
+    weekly_attendance, team_name, year, week,
+    margin_of_victory, strength_of_schedule, playoffs
+  )
+
+head(attendance_df)</code></pre>
+<pre><code>## # A tibble: 6 x 7
+##   weekly_attendance team_name  year  week margin_of_victory strength_of_schedule
+##               &lt;dbl&gt; &lt;chr&gt;     &lt;dbl&gt; &lt;dbl&gt;             &lt;dbl&gt;                &lt;dbl&gt;
+## 1             77434 Cardinals  2000     1             -14.6                 -0.7
+## 2             66009 Cardinals  2000     2             -14.6                 -0.7
+## 3             71801 Cardinals  2000     4             -14.6                 -0.7
+## 4             66985 Cardinals  2000     5             -14.6                 -0.7
+## 5             44296 Cardinals  2000     6             -14.6                 -0.7
+## 6             38293 Cardinals  2000     7             -14.6                 -0.7
+## # … with 1 more variable: playoffs &lt;chr&gt;</code></pre>
 </div>
 <div id="building-models" class="section level2">
 <h2>Building models</h2>
-<p>[Work in progress]</p>
+<div id="splitting-the-data" class="section level3">
+<h3>Splitting the data</h3>
+<p>Now we can start using some <code>tidymodels</code> packages!</p>
+<p>First up we need to split our data - we do this using the <code>initial_split()</code> function from the <code>rsample</code> package. We’ll use the default setting of a 75:25 split for training:test set size. Note that in a real-life ML project we would use resampling to build multiple training and test sets for evaluating model performance - this will be discussed later. For now a simpler approach will suffice.</p>
+<p>Note that as per our EDA above, we need to stratify this to ensure that each set has roughly the same number of teams that went on to the playoffs - we do this using the <code>strata</code> argument.</p>
+<pre class="r"><code>library(tidymodels)
+
+set.seed(1234)
+attendance_split &lt;- attendance_df %&gt;%
+  initial_split(strata = playoffs)
+
+nfl_train &lt;- training(attendance_split)
+nfl_test &lt;- testing(attendance_split)</code></pre>
+<p>Now we’ve got our datasets, we can move on to the modelling itself.</p>
+</div>
+<div id="specifying-and-fitting-models" class="section level3">
+<h3>Specifying and fitting models</h3>
+<p>For this exercise we will compare two models - a linear model and a random forest. To do this we will use functions from the <code>parsnip</code> package.</p>
+<ol style="list-style-type: decimal">
+<li>Linear model</li>
+</ol>
+<p>First let’s specify the model:</p>
+<pre class="r"><code>lm_spec &lt;- linear_reg() %&gt;% 
+  set_engine(engine = &quot;lm&quot;)
+
+lm_spec</code></pre>
+<pre><code>## Linear Regression Model Specification (regression)
+## 
+## Computational engine: lm</code></pre>
+<p>Next we fit the model on the training data:</p>
+<pre class="r"><code>lm_fit &lt;- lm_spec %&gt;% 
+  fit(weekly_attendance ~ .,
+      data = nfl_train)
+
+lm_fit</code></pre>
+<pre><code>## parsnip model object
+## 
+## Fit time:  26ms 
+## 
+## Call:
+## stats::lm(formula = weekly_attendance ~ ., data = data)
+## 
+## Coefficients:
+##          (Intercept)        team_nameBears      team_nameBengals  
+##             -81107.9               -2879.8               -4875.5  
+##       team_nameBills      team_nameBroncos       team_nameBrowns  
+##               -361.1                2805.2                -324.1  
+##  team_nameBuccaneers    team_nameCardinals     team_nameChargers  
+##              -3063.7               -6139.8               -6489.3  
+##      team_nameChiefs        team_nameColts      team_nameCowboys  
+##               1974.3               -3392.8                6068.7  
+##    team_nameDolphins       team_nameEagles      team_nameFalcons  
+##                139.7                1259.2                -204.2  
+##      team_nameGiants      team_nameJaguars         team_nameJets  
+##               5447.1               -3095.5                4044.2  
+##       team_nameLions      team_namePackers     team_namePanthers  
+##              -3480.7                1114.1                1227.3  
+##    team_namePatriots      team_nameRaiders         team_nameRams  
+##               -214.2               -6324.7               -2884.8  
+##      team_nameRavens     team_nameRedskins       team_nameSaints  
+##               -398.9                6447.1                 381.0  
+##    team_nameSeahawks     team_nameSteelers       team_nameTexans  
+##              -1405.9               -3567.8                 264.1  
+##      team_nameTitans      team_nameVikings                  year  
+##              -1118.2               -3183.1                  74.7  
+##                 week     margin_of_victory  strength_of_schedule  
+##                -72.8                 137.6                 230.7  
+##     playoffsPlayoffs  
+##               -427.9</code></pre>
+<p>This model is now ready to use. Now we can move on to the second model.</p>
+<ol start="2" style="list-style-type: decimal">
+<li>Random forest</li>
+</ol>
+<p>Specify the model:</p>
+<pre class="r"><code>rf_spec &lt;- rand_forest(mode = &quot;regression&quot;) %&gt;%
+  set_engine(&quot;ranger&quot;)
+
+rf_spec</code></pre>
+<pre><code>## Random Forest Model Specification (regression)
+## 
+## Computational engine: ranger</code></pre>
+<p>Fit the model:</p>
+<pre class="r"><code>rf_fit &lt;- rf_spec %&gt;%
+  fit(weekly_attendance ~ .,
+    data = nfl_train
+  )
+
+rf_fit</code></pre>
+<pre><code>## parsnip model object
+## 
+## Fit time:  7.4s 
+## Ranger result
+## 
+## Call:
+##  ranger::ranger(x = maybe_data_frame(x), y = y, num.threads = 1,      verbose = FALSE, seed = sample.int(10^5, 1)) 
+## 
+## Type:                             Regression 
+## Number of trees:                  500 
+## Sample size:                      7656 
+## Number of independent variables:  6 
+## Mtry:                             2 
+## Target node size:                 5 
+## Variable importance mode:         none 
+## Splitrule:                        variance 
+## OOB prediction error (MSE):       7.5e+07 
+## R squared (OOB):                  0.082</code></pre>
+</div>
+</div>
+<div id="evaluating-the-models" class="section level2">
+<h2>Evaluating the models</h2>
+<p>Now we need to measure how effective our models were and compare them. One way to do this is to <code>predict()</code> the weekly attendance for the test set.</p>
+<pre class="r"><code>results_test &lt;- lm_fit %&gt;%
+  predict(new_data = nfl_test) %&gt;%
+  mutate(
+    truth = nfl_test$weekly_attendance,
+    model = &quot;lm&quot;
+  ) %&gt;%
+  bind_rows(rf_fit %&gt;%
+    predict(new_data = nfl_test) %&gt;%
+    mutate(
+      truth = nfl_test$weekly_attendance,
+      model = &quot;rf&quot;
+    ))</code></pre>
+<p>This gives us a tibble with the predictions and true values for both models</p>
+<pre class="r"><code>results_test %&gt;% slice(c(1:5, (n() -5):n()))</code></pre>
+<pre><code>## # A tibble: 11 x 3
+##     .pred truth model
+##     &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;
+##  1 59162. 65356 lm   
+##  2 59017. 50289 lm   
+##  3 58871. 37452 lm   
+##  4 58798. 65711 lm   
+##  5 66880. 73025 lm   
+##  6 67178. 58613 rf   
+##  7 68914. 66910 rf   
+##  8 65276. 60926 rf   
+##  9 62456. 65265 rf   
+## 10 66187. 71504 rf   
+## 11 67666. 90646 rf</code></pre>
+<p>Let’s visualise the predictions versus the truth for both models:</p>
+<pre class="r"><code>results_test %&gt;%
+  ggplot(aes(x = truth, y = .pred, color = model)) +
+  geom_abline(lty = 2) +
+  geom_point(alpha = 0.5) +
+  scale_x_continuous(labels = scales::comma) +
+  scale_y_continuous(labels = scales::comma) +
+  facet_wrap(~model) +
+  labs(y = &quot;Predicted weekly attendance&quot;, x = &quot;Actual weekly attendance&quot;) +
+  coord_obs_pred() +  # scale and size the x- and y-axis uniformly
+  theme(panel.spacing = unit(2, &quot;lines&quot;))  # widen the gap between plots for aesthetic purposes</code></pre>
+<p><img src="staticunnamed-chunk-17-1.png" width="2100" /></p>
+<p>It looks like neither model does a particularly good job of predicting the attendance, though it’s hard to see which is better. Let’s try to establish this numerically rather than visually. The <code>yardstick</code> package contains a <code>metric_set</code> function, from which we can compute any metrics of interest for both models.</p>
+<p>As discussed <a href="https://www.tmwr.org/performance.html">here</a> in the tidymodels textbook, the choice of which metric to examine can be critical. Accuracy, as measured by the RMSE, and correlation, as measured by the R<sup>2</sup>, are not the same thing, and in proper ML projects the choice of which to optimise should be made on a case-by-case basis. For now, we will simply evaluate both.</p>
+<pre class="r"><code>nfl_metrics &lt;- metric_set(rmse, rsq)
+
+results_test %&gt;% 
+  group_by(model) %&gt;% 
+  nfl_metrics(truth = truth, estimate = .pred) %&gt;% 
+  select(model, .metric, .estimate)</code></pre>
+<pre><code>## # A tibble: 4 x 3
+##   model .metric .estimate
+##   &lt;chr&gt; &lt;chr&gt;       &lt;dbl&gt;
+## 1 lm    rmse     8351.   
+## 2 rf    rmse     8582.   
+## 3 lm    rsq         0.142
+## 4 rf    rsq         0.117</code></pre>
+<p>The linear model produced a lower error and higher r-squared score, showing that for this particular dataset it’s the better model. Its average error in predicting weekly attendance is ~8350 people, which isn’t too bad given how basic it is!</p>
+<p>Presumably the random forest model, being much more complex than the linear one, overfit to the training data, which is why it did a worse job on the test set (further analysis showed this to indeed be the case - code not shown).</p>
+</div>
+<div id="resampling-the-data" class="section level2">
+<h2>Resampling the data</h2>
+<p>As touched on earlier, in a real-lfie ML project, we would not simply train models on the training set and then immediately apply them to the test set. The test set should not be touched until validation for model selection has been completed. Instead, we need to take a <em>resampling</em> approach using <em>cross-validation</em>.</p>
+<p>Below, we use the <code>vfold_cv()</code> function from the <code>rsample</code> package to achieve this and then re-compute our metrics of interest for both models.</p>
+<p>Linear model:</p>
+<pre class="r"><code>set.seed(1234)
+nfl_folds &lt;- vfold_cv(nfl_train, strata = playoffs)
+
+lm_res &lt;- fit_resamples(
+  lm_spec,
+  weekly_attendance ~ .,
+  nfl_folds,
+  control = control_resamples(save_pred = TRUE)
+)
+
+lm_res %&gt;%
+  collect_metrics() %&gt;% 
+  select(.metric, mean)</code></pre>
+<pre><code>## # A tibble: 2 x 2
+##   .metric     mean
+##   &lt;chr&gt;      &lt;dbl&gt;
+## 1 rmse    8335.   
+## 2 rsq        0.148</code></pre>
+<p>Random forest model:</p>
+<pre class="r"><code>set.seed(1234)
+nfl_folds &lt;- vfold_cv(nfl_train, strata = playoffs)
+
+rf_res &lt;- fit_resamples(
+  rf_spec,
+  weekly_attendance ~ .,
+  nfl_folds,
+  control = control_resamples(save_pred = TRUE)
+)
+
+rf_res %&gt;%
+  collect_metrics() %&gt;% 
+  select(.metric, mean)</code></pre>
+<pre><code>## # A tibble: 2 x 2
+##   .metric     mean
+##   &lt;chr&gt;      &lt;dbl&gt;
+## 1 rmse    8617.   
+## 2 rsq        0.117</code></pre>
+<p>So now using <strong>only</strong> the training set we have got metric estimates very close to the ones we computed from the test set earlier. Using cross-validation in this way allows us to be more economical with our data spending, as well as making it possible to tune the models without the risk of any data leakage from the test set.</p>
+</div>
+<div id="conclusions" class="section level2">
+<h2>Conclusions</h2>
+<p>In this post we:</p>
+<ol style="list-style-type: decimal">
+<li>Loaded and explored the data, which allowed us to make more informed choices about how to later model it.</li>
+<li>Gained familiarity with the <code>tidymodels</code> framework of packages, such as:</li>
+</ol>
+<ul>
+<li>Using <code>rsample</code> for data splitting</li>
+<li>Using <code>parsnip</code> for model specifying and fitting.</li>
+<li>Using <code>yardstick</code> for model evaluation</li>
+<li>Using <code>rsample</code> again, this time for doing cross-validation.</li>
+</ul>
+<ol start="3" style="list-style-type: decimal">
+<li>Established that, for this particular dataset, the linear model did a better job of predicting on new data than the random forest, which overfit to the training set.</li>
+</ol>
 </div>
