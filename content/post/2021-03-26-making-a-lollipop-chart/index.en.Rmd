@@ -1,26 +1,26 @@
 ---
-title: How (and why) to make a lollipop plot in R
-author: James Gammerman
+title: "How (and why) to make a lollipop plot in R"
+author: "James Gammerman"
 date: '2021-03-26'
-slug: making-a-lollipop-chart
 categories: []
-tags: []
-subtitle: ''
-summary: ''
-authors: []
-lastmod: '2021-03-26T19:55:36Z'
 featured: no
 image:
   caption: ''
   focal_point: ''
   preview_only: no
+lastmod: '2021-03-26T19:55:36Z'
 projects: []
+slug: making-a-lollipop-chart
+subtitle: ''
+summary: ''
+tags: []
+authors: []
 ---
 
 
 ```{r setup, include=FALSE}
 
-knitr::opts_chunk$set(cache = TRUE, warning = FALSE, message = FALSE,
+knitr::opts_chunk$set(cache = FALSE, warning = FALSE, message = FALSE,
                       echo = TRUE, dpi = 300, cache.lazy = FALSE,
                       styler = TRUE, fig.path = "static")
 
