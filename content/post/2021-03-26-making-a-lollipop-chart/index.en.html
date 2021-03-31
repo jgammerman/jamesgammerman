@@ -41,9 +41,9 @@ library(glue)
 theme_set(theme_light())
 
 tt &lt;- tt_load(&quot;2021-02-23&quot;)</code></pre>
-<pre><code>## 
-##  Downloading file 1 of 2: `earn.csv`
-##  Downloading file 2 of 2: `employed.csv`</code></pre>
+<pre><code>FALSE 
+FALSE   Downloading file 1 of 2: `earn.csv`
+FALSE   Downloading file 2 of 2: `employed.csv`</code></pre>
 <pre class="r"><code>employed &lt;- tt$employed</code></pre>
 </div>
 <div id="exploratory-data-analysis" class="section level1">
@@ -60,12 +60,14 @@ tt &lt;- tt_load(&quot;2021-02-23&quot;)</code></pre>
 ## 5 Agricul… Sales and offic… Sales and relat… TOTAL              2349000    12000
 ## 6 Agricul… Sales and offic… Office and admi… TOTAL              2349000    96000
 ## # … with 1 more variable: year &lt;dbl&gt;</code></pre>
-<p>So we have employment numbers broken down by:
-* Industry
-* Major occupation
-* Minor ocupation
-* Race/gender
-* Year.</p>
+<p>So we have employment numbers broken down by:</p>
+<ul>
+<li>Industry</li>
+<li>Major occupation</li>
+<li>Minor ocupation</li>
+<li>Race/gender</li>
+<li>Year.</li>
+</ul>
 <p>Further exploratory analysis (not shown) reveals that we have 25 different industries, 5 different major occupations, 12 minor occupations, and 6 values for race/gender. We also have 660 missing values in the employment number columns so we’ll need to deal with this.</p>
 <p>If we were doing a proper analysis/modelling project we’d need to do more thorough EDA here but this is enough for now.</p>
 </div>
@@ -75,11 +77,8 @@ tt &lt;- tt_load(&quot;2021-02-23&quot;)</code></pre>
 <ol style="list-style-type: decimal">
 <li>Add another column which will make it easier for us to slice our data by race, gender or not at all. We’ll call this <code>dimension</code>.</li>
 <li>Remove any records with missing employment figures.</li>
-<li>Reduce the number of industries from 25 down to the biggest 10 and lump the remaining 15 into an “other” category</li>
+<li>Reduce the number of industries from 25 down to the biggest 10 and lump the remaining 15 into an “other” category. For this we’ll use <code>fct_lump_n()</code> instead of <code>fct_lump()</code> which was used in the original code.</li>
 </ol>
-<ul>
-<li>For this we’ll use <code>fct_lump_n()</code> instead of <code>fct_lump()</code> which was used in the original code.</li>
-</ul>
 <pre class="r"><code>employed_cleaned &lt;- employed %&gt;%
   mutate(
     dimension = case_when(
@@ -117,7 +116,7 @@ head(employed_cleaned)</code></pre>
 </div>
 <div id="better-plot" class="section level1">
 <h1>Better plot</h1>
-<p>Let’s plot this in smarter way.</p>
+<p>Let’s plot this in a smarter way.</p>
 <p>Firstly, we’ll gather the <code>industry</code>/<code>major occupation</code>/<code>minor occupation</code> columns into one called <code>level</code> using <code>pivot_longer()</code>. Then we’ll summarise employment numbers by groups so we can slice by various groups of interest (e.g. a particular gender or occupation level):</p>
 <pre class="r"><code>comparison &lt;- employed_cleaned %&gt;%
   filter(year %in% c(2019, 2020)) %&gt;%
@@ -129,7 +128,7 @@ head(employed_cleaned)</code></pre>
   summarize(employ_n = sum(employ_n)) %&gt;%
   ungroup() %&gt;%
   arrange(year)</code></pre>
-<p>Our data now looks like this - note the columns now pivotted into one called <code>level</code>:</p>
+<p>Our data now looks like this - note the new <code>level</code> and <code>occupation</code> columns from the pivot operation.</p>
 <pre class="r"><code>head(comparison)</code></pre>
 <pre><code>## # A tibble: 6 x 6
 ##   dimension race_gender level    occupation                    year  employ_n
@@ -149,7 +148,7 @@ head(employed_cleaned)</code></pre>
   group_by(dimension, level, occupation) %&gt;% # create a new group without the race_gender
   mutate(total_2019 = sum(employed_2019)) %&gt;%  # gives us total for all race_genders
   ungroup()</code></pre>
-<p>Our data now looks like this - note the new columns at the end:</p>
+<p>Note the new columns this creates on the right-hand side of the dataset:</p>
 <pre class="r"><code>head(comparison)</code></pre>
 <pre><code>## # A tibble: 6 x 8
 ##   dimension race_gender level occupation ratio   change employed_2019 total_2019

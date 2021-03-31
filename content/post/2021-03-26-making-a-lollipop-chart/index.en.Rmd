@@ -52,7 +52,7 @@ Let's reproduce the plot in steps.
 
 First we load the relevant R packages and the dataset itself. In this case there were two datasets - one about employment figures and one about earnings, so we load just the employment data into an object called `employed`.
 
-```{r Load, message=FALSE, warning=FALSE}
+```{r Load, message=FALSE, warning=FALSE, comment=FALSE}
 library(tidyverse)
 library(tidytuesdayR)
 library(scales)
@@ -73,7 +73,8 @@ Let's take an initial look at the data:
 head(employed)
 ```
 
-So we have employment numbers broken down by:
+So we have employment numbers broken down by: 
+
 * Industry
 * Major occupation
 * Minor ocupation
@@ -90,8 +91,7 @@ Let's clean this data up a bit. Most importantly we need to:
 
 1. Add another column which will make it easier for us to slice our data by race, gender or not at all. We'll call this `dimension`.
 2. Remove any records with missing employment figures.
-3. Reduce the number of industries from 25 down to the biggest 10 and lump the remaining 15 into an "other" category 
-* For this we'll use `fct_lump_n()` instead of `fct_lump()` which was used in the original code.
+3. Reduce the number of industries from 25 down to the biggest 10 and lump the remaining 15 into an "other" category. For this we'll use `fct_lump_n()` instead of `fct_lump()` which was used in the original code.
 
 ```{r Cleaning}
 
@@ -126,7 +126,7 @@ This is a good start, we can see that around 10m jobs were lost overall, though 
 
 # Better plot
 
-Let's plot this in smarter way. 
+Let's plot this in a smarter way. 
 
 Firstly, we'll gather the `industry`/`major occupation`/`minor occupation` columns into one called `level` using `pivot_longer()`. Then we'll summarise employment numbers by groups so we can slice by various groups of interest (e.g. a particular gender or occupation level):
 
@@ -143,7 +143,7 @@ comparison <- employed_cleaned %>%
   arrange(year)
 ```
 
-Our data now looks like this - note the columns now pivotted into one called `level`:
+Our data now looks like this - note the new `level` and `occupation` columns from the pivot operation.
 
 ```{r}
 head(comparison)
@@ -164,7 +164,7 @@ comparison <- comparison %>%
 
 ```
 
-Our data now looks like this - note the new columns at the end:
+Note the new columns this creates on the right-hand side of the dataset:
 
 ```{r}
 head(comparison)
