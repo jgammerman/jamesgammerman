@@ -1,5 +1,5 @@
 ---
-title: Making a lollipop chart
+title: How (and why) to make a lollipop plot in R
 author: James Gammerman
 date: '2021-03-26'
 slug: making-a-lollipop-chart
@@ -22,11 +22,12 @@ projects: []
 
 <div id="introduction" class="section level1">
 <h1>Introduction</h1>
-<p>In this post I’m going to reproduce an unusual chart I saw David Robinson make during one of his recent Tidy Tuesday screencasts looking at data from the US Bureau of Labour Statistics (BLS).</p>
-<p>The point of this exercise is to a) force me to work through the steps that went in to making it, which improves my data science skills, and b) give me something to refer back to in future if I want to make something similar for another dataset.</p>
-<p>Some of his code used deprecated functions like <code>gather()</code> and <code>fct_lump()</code>, so I’ll also be adapting it slightly in order to improve my familiarity with the latest innovations in R.</p>
+<p>In this post I’m going to reproduce an unusual chart I saw David Robinson make during one of his recent Tidy Tuesday screencasts looking at data from the US Bureau of Labour Statistics.</p>
+<p>The point of this exercise is to a) force me to work through the steps that went in to making it, which improves my data visualisation skills, and b) give me something to refer back to in future if I want to make something similar for another dataset. It might even be useful for other people, hence why I’m sharing it!</p>
+<p>Some of David’s code used deprecated functions like <code>gather()</code> and <code>fct_lump()</code>, so I’ll also be adapting it slightly in order to improve my familiarity with the latest innovations in R.</p>
 <p>The chart’s called a “lollipop plot” and I think it does a really neat job of showing how the pandemic impacted US job numbers in 2020, broken down by industry and gender.</p>
 <p>Here’s the plot:</p>
+<p><img src="lollipop_plot.jpg" width="80%" /></p>
 <p>It shows that the public administration sector was the only industry to win from the pandemic, while leisure and hopsitality lost heaviily; and that whether men or women lost more jobs was dependent on the industry.</p>
 <p>Let’s reproduce the plot in steps.</p>
 </div>
@@ -43,8 +44,7 @@ tt &lt;- tt_load(&quot;2021-02-23&quot;)</code></pre>
 <pre><code>## 
 ##  Downloading file 1 of 2: `earn.csv`
 ##  Downloading file 2 of 2: `employed.csv`</code></pre>
-<pre class="r"><code>#load(&quot;tt.RData&quot;)
-employed &lt;- tt$employed</code></pre>
+<pre class="r"><code>employed &lt;- tt$employed</code></pre>
 </div>
 <div id="exploratory-data-analysis" class="section level1">
 <h1>Exploratory data analysis</h1>

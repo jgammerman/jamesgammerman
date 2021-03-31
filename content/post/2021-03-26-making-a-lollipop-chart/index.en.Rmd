@@ -1,5 +1,5 @@
 ---
-title: Making a lollipop chart
+title: How (and why) to make a lollipop plot in R
 author: James Gammerman
 date: '2021-03-26'
 slug: making-a-lollipop-chart
@@ -28,18 +28,20 @@ knitr::opts_chunk$set(cache = TRUE, warning = FALSE, message = FALSE,
 
 # Introduction
 
-In this post I'm going to reproduce an unusual chart I saw David Robinson make during one of his recent Tidy Tuesday screencasts looking at data from the US Bureau of Labour Statistics (BLS). 
+In this post I'm going to reproduce an unusual chart I saw David Robinson make during one of his recent Tidy Tuesday screencasts looking at data from the US Bureau of Labour Statistics.
 
-The point of this exercise is to a) force me to work through the steps that went in to making it, which improves my data science skills, and b) give me something to refer back to in future if I want to make something similar for another dataset.
+The point of this exercise is to a) force me to work through the steps that went in to making it, which improves my data visualisation skills, and b) give me something to refer back to in future if I want to make something similar for another dataset. It might even be useful for other people, hence why I'm sharing it!
 
-Some of his code used deprecated functions like `gather()` and `fct_lump()`, so I'll also be adapting it slightly in order to improve my familiarity with the latest innovations in R.
+Some of David's code used deprecated functions like `gather()` and `fct_lump()`, so I'll also be adapting it slightly in order to improve my familiarity with the latest innovations in R.
 
 The chart's called a "lollipop plot" and I think it does a really neat job of showing how the pandemic impacted US job numbers in 2020, broken down by industry and gender. 
 
 Here's the plot:
 
 ```{r plot_image, echo=FALSE, fig.cap="", out.width = '80%'}
-#knitr::include_graphics("plot.png")
+#knitr::include_graphics("lollipop_plot_of_interest2.png")
+knitr::include_graphics("lollipop_plot.jpg")
+
 ```
 
 It shows that the public administration sector was the only industry to win from the pandemic, while leisure and hopsitality lost heaviily; and that whether men or women lost more jobs was dependent on the industry.
@@ -58,7 +60,6 @@ library(glue)
 theme_set(theme_light())
 
 tt <- tt_load("2021-02-23")
-#load("tt.RData")
 employed <- tt$employed
 
 ```
