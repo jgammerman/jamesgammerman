@@ -217,7 +217,7 @@ To build the lollipop plot we need to:
          size = "# employed 2019")
 ```
 
-And we have our final plot! Now we can see clearly that Leisure & Hospitality was by far the biggest loser from the pandemic, with a loss of >20% of jobs from the 2019 fiture of 14.6m. 
+And we have our final plot! Now we can see clearly that Leisure & Hospitality was by far the biggest loser from the pandemic, with a loss of >20% of jobs from the 2019 figure of 14.6m. 
 
 Job done :)
 
